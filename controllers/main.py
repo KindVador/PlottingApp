@@ -5,6 +5,7 @@ import pyqtgraph as pg
 from PySide2.QtWidgets import QApplication, QMessageBox
 
 from views.main import MainWindow
+from models.main import VariableTreeModel
 
 __version__ = '2019.1.0a'
 
@@ -47,9 +48,24 @@ class QtMainController(object):
         logger.info("creation of connections between the main controller and the main view")
         self.view.actionQuit.triggered.connect(self.quit)
         self.view.actionOpen.triggered.connect(self._open)
+        self.view.variable_btn.clicked.connect(self.show_hide_tree_view)
 
     def quit(self):
         logger.info("QUIT ACTION")
+        self.app.closeAllWindows()
+        self.app.exit(0)
 
     def _open(self):
         logger.info("OPEN ACTION")
+        self.model = VariableTreeModel(variables=["Variable 1", "Variable 2", "Variable 3"])
+        self.view.variable_tree.setModel(self.model)
+        self.model.modelReset.emit()  # force the refresh of the data
+        logger.info(self.view.variable_tree.model())
+
+    def show_hide_tree_view(self):
+        if self.view.variable_tree.isVisible():
+            self.view.variable_tree.setVisible(False)
+            self.view.variable_btn.setText(">>")
+        else:
+            self.view.variable_tree.setVisible(True)
+            self.view.variable_btn.setText("<<")
