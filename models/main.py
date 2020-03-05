@@ -2,12 +2,78 @@
 import logging
 import typing
 
+import pandas as pd
 import PySide2
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QStandardItem, QStandardItemModel
+from PySide2.QtWidgets import QTreeWidgetItem
 
 
 logger = logging.getLogger("PlottingApp")
+
+
+class PlotModel(object):
+
+    def __init__(self):
+        self._df = None
+        self.parameters_items = []
+        self.plots = []
+
+    @property
+    def dataframe(self):
+        return self._df
+
+    @dataframe.setter
+    def dataframe(self, data):
+        self._df = pd.read_csv(data, skiprows=[0, 1, 2, 3, 4, 5, 7], sep=';', index_col=0, decimal=',')
+        self.parameters_items = [QTreeWidgetItem([v]) for v in self._df.columns]
+
+    def __getitem__(self, item):
+        return self.dataframe[item]
+
+    def add_plot(self, d, ext, axe=None, marker=None, linestyle=None, drawstyle=None):
+        plots_dict = {}
+        for root, childs in d.items():
+            if childs is not None:
+                for c in childs:
+                    rec_var = f'{root} ({c}){ext}'
+                    plots_dict[rec_var] = {'label': f'{root}({c})',
+                                           'x_data': self[rec_var].index,
+                                           'y_data': self[rec_var],
+                                           'y_label': root,
+                                           'title': f'{root}{ext}',
+                                           'short_label': f'{c}',
+                                           'marker': marker,
+                                           'linestyle': linestyle,
+                                           'drawstyle': drawstyle}
+            else:
+                rec_var = f'{root}{ext}'
+                plots_dict[rec_var] = {'label': root,
+                                       'x_data': self[rec_var].index,
+                                       'y_data': self[rec_var],
+                                       'y_label': root,
+                                       'title': f'{root}{ext}',
+                                       'short_label': root,
+                                       'marker': marker,
+                                       'linestyle': linestyle,
+                                       'drawstyle': drawstyle}
+        if axe is None:
+            self.plots.append(plots_dict)
+        else:
+            # TODO check if variables are already in axe
+            self.plots[axe].update(plots_dict)
+        logger.info(f"Add plots for: {[v['label'] for k, v in plots_dict.items()]}")
+
+    def clear(self):
+        self._df = None
+        self.parameters_items = []
+        self.plots = []
+
+    def clear_plots_only(self):
+        self.plots = []
+
+    def remove_plot(self, index):
+        self.plots.pop(index)
 
 
 class VariableTreeModel(QStandardItemModel):

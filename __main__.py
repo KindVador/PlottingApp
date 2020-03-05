@@ -6,6 +6,8 @@ import optparse
 
 from controllers.main import QtMainController
 
+__version__ = '2020.1.0a1'
+
 
 def main(argv=None):
     if argv is None:
@@ -29,7 +31,7 @@ def main(argv=None):
     logger.addHandler(log_handler)
     logger.info(f"logging level: {root_level}")
 
-    mc = QtMainController(sys.argv)
+    mc = QtMainController(sys.argv, __version__)
     mc()
 
 
