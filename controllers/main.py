@@ -7,6 +7,7 @@ from PySide2.QtWidgets import QApplication, QMessageBox, QFileDialog
 
 from views.main import MainWindow
 from models.main import PlotModel
+from controllers.data_import import ReadCSVController
 
 logger = logging.getLogger("PlottingApp")
 
@@ -59,17 +60,8 @@ class QtMainController(object):
 
     def _open(self):
         logger.info("OPEN ACTION")
-        opts = QFileDialog.Options()
-        user_path = ''
-        file_dlg = QFileDialog()
-        file_url = file_dlg.getOpenFileName(self.view, "Select CSV file", user_path, "CSV files (*.csv)", "", opts)
-        if file_url:
-            self.model.dataframe = file_url[0]
-            # updates tree items
-            self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)
-            self.view.parameters_tree_widget.resizeColumnToContents(0)
-        else:
-            self._close_action()
+        dic = ReadCSVController()
+        df = dic.get_data_with_dialog()
 
     def _add_clicked(self):
         d = {}

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>728</width>
-    <height>503</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="file_hlayout">
+    <layout class="QHBoxLayout" name="file_layout">
      <item>
       <widget class="QLabel" name="file_label">
        <property name="text">
@@ -29,35 +29,25 @@
      <item>
       <widget class="QPushButton" name="file_button">
        <property name="text">
-        <string>choose</string>
+        <string>select</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="Line" name="line">
+    <widget class="Line" name="h_line_1">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="infos_preset_layout">
      <item>
-      <widget class="QLabel" name="presel_label">
+      <widget class="QPushButton" name="infos_button">
        <property name="text">
-        <string>Preset:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="comboBox"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="save_preset">
-       <property name="text">
-        <string>Save</string>
+        <string>infos</string>
        </property>
       </widget>
      </item>
@@ -74,102 +64,91 @@
        </property>
       </spacer>
      </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLabel" name="sep_label">
-         <property name="text">
-          <string>sep:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="sep_edit"/>
-       </item>
-      </layout>
+      <widget class="QLabel" name="preset_label">
+       <property name="text">
+        <string>Preset:</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
-        <widget class="QLabel" name="decimal_label">
-         <property name="text">
-          <string>decimal:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="decimal_edit"/>
-       </item>
-      </layout>
+      <widget class="QComboBox" name="preset_cbox"/>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="skiprows_label">
-         <property name="text">
-          <string>skiprows:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="skiprows_edit"/>
-       </item>
-      </layout>
+      <widget class="QPushButton" name="save_cfg_button">
+       <property name="text">
+        <string>Save configuration</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_9">
+    <layout class="QHBoxLayout" name="options_columns_hlayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <layout class="QVBoxLayout" name="options_vlayout">
        <item>
-        <widget class="QLabel" name="index_col_label">
-         <property name="text">
-          <string>index col:</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="options_label">
+           <property name="text">
+            <string>Options:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="add_opt_button">
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="remove_opt_button">
+           <property name="text">
+            <string>Remove</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QLineEdit" name="index_col_edit"/>
+        <widget class="QTableView" name="options_table"/>
        </item>
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <layout class="QVBoxLayout" name="columns_vlayout">
        <item>
-        <widget class="QLabel" name="prefix_label">
+        <widget class="QLabel" name="columns_label">
          <property name="text">
-          <string>prefix:</string>
+          <string>Columns:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="prefix_edit"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
-        <widget class="QLabel" name="na_values_label">
-         <property name="text">
-          <string>na_values:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="na_values_edit"/>
+        <widget class="QTableView" name="columns_table"/>
        </item>
       </layout>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QTableView" name="columns_table"/>
+    <widget class="Line" name="h_line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="preview_label">
+     <property name="text">
+      <string>Preview:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableView" name="preview_table"/>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
