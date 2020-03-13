@@ -1,2 +1,4 @@
 *.pyc
 PlottingApp.log
+.idea/
+
