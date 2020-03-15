@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+import os
 import logging
 
 import pandas as pd
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QApplication, QMessageBox, QFileDialog
+from PySide2.QtWidgets import QFileDialog
 
 from models.data_import import ReadCSVModel
 from views.data_import import ReadCSVDialog
@@ -27,17 +27,17 @@ class ReadCSVController(object):
         self.view.file_button.clicked.connect(self._select_file)
         self.view.columns_table.setModel(self.model.columns_model)
         self.view.options_table.setModel(self.model.options_model)
+        self.view.preview_table.setModel(self.model.preview_model)
 
     def _select_file(self):
         logger.info("SELECT FILE ACTION")
         opts = QFileDialog.Options()
         user_path = ''
-        file_dlg = QFileDialog()
+        file_dlg = QFileDialog(parent=self.view)
         file_url = file_dlg.getOpenFileName(self.view, "Select CSV file", user_path, "CSV files (*.csv)", "", opts)
-        if file_url:
+        if file_url and os.path.isfile(file_url[0]):
             self.view.file_line_edit.setText(file_url[0])
-            with open(file_url[0], mode='r') as input_data:
-                self.model.preview_raw_data = input_data.readlines(15)
+            self.model.csv_path = file_url[0]
         else:
             logger.info("User has canceled file selection")
 
