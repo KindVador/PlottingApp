@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'csv_config_widget.ui',
 # licensing of 'csv_config_widget.ui' applies.
 #
-# Created: Wed Mar 11 12:55:37 2020
+# Created: Sat Mar 21 12:15:59 2020
 #      by: pyside2-uic  running on PySide2 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -59,12 +59,6 @@ class Ui_CSVConfigDialog(object):
         self.options_label = QtWidgets.QLabel(CSVConfigDialog)
         self.options_label.setObjectName("options_label")
         self.horizontalLayout.addWidget(self.options_label)
-        self.add_opt_button = QtWidgets.QPushButton(CSVConfigDialog)
-        self.add_opt_button.setObjectName("add_opt_button")
-        self.horizontalLayout.addWidget(self.add_opt_button)
-        self.remove_opt_button = QtWidgets.QPushButton(CSVConfigDialog)
-        self.remove_opt_button.setObjectName("remove_opt_button")
-        self.horizontalLayout.addWidget(self.remove_opt_button)
         self.options_vlayout.addLayout(self.horizontalLayout)
         self.options_table = QtWidgets.QTableView(CSVConfigDialog)
         self.options_table.setObjectName("options_table")
@@ -110,8 +104,6 @@ class Ui_CSVConfigDialog(object):
         self.preset_label.setText(QtWidgets.QApplication.translate("CSVConfigDialog", "Preset:", None, -1))
         self.save_cfg_button.setText(QtWidgets.QApplication.translate("CSVConfigDialog", "Save configuration", None, -1))
         self.options_label.setText(QtWidgets.QApplication.translate("CSVConfigDialog", "Options:", None, -1))
-        self.add_opt_button.setText(QtWidgets.QApplication.translate("CSVConfigDialog", "Add", None, -1))
-        self.remove_opt_button.setText(QtWidgets.QApplication.translate("CSVConfigDialog", "Remove", None, -1))
         self.columns_label.setText(QtWidgets.QApplication.translate("CSVConfigDialog", "Columns:", None, -1))
         self.preview_label.setText(QtWidgets.QApplication.translate("CSVConfigDialog", "Preview:", None, -1))
 

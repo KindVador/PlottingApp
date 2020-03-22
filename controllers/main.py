@@ -3,7 +3,7 @@ import sys
 import logging
 
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QApplication, QMessageBox, QFileDialog
+from PySide2.QtWidgets import QApplication
 
 from views.main import MainWindow
 from models.main import PlotModel
@@ -61,7 +61,10 @@ class QtMainController(object):
     def _open(self):
         logger.info("OPEN ACTION")
         dic = ReadCSVController()
-        df = dic.get_data_with_dialog()
+        self.model.dataframe = dic.get_data_with_dialog()
+        # updates tree items
+        self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)
+        self.view.parameters_tree_widget.resizeColumnToContents(0)
 
     def _add_clicked(self):
         d = {}

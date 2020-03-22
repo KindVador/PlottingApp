@@ -24,9 +24,10 @@ class PlotModel(object):
         return self._df
 
     @dataframe.setter
-    def dataframe(self, data):
-        self._df = pd.read_csv(data, skiprows=[0, 1, 2, 3, 4, 5, 7], sep=';', index_col=0, decimal=',')
+    def dataframe(self, df):
+        self._df = df
         self.parameters_items = [QTreeWidgetItem([v]) for v in self._df.columns]
+        print(self.parameters_items)
 
     def __getitem__(self, item):
         return self.dataframe[item]

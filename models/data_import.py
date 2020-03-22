@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
 import io
 import logging
+import typing
 
 import pandas as pd
-from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex
+from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal
 
 logger = logging.getLogger("PlottingApp")
 
+default_options = [['sep', ',', str], ['skiprows', None, int], ['decimal', '.', str], ['header', 'infer', str],
+                   ['index_col', None, int], ['na_values', None, str], ['nrows', None, int],
+                   ['parse_dates', False, bool], ['keep_date_col', False, bool], ['comment', None, str],
+                   ['encoding', None, str]]
+
 
 class OptionTableModel(QAbstractTableModel):
+    option_modified = Signal()
 
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
         self.header = {0: "OPTION", 1: "VALUE"}
-        self.options = []
+        self.options = default_options
 
     def rowCount(self, parent: QModelIndex = ..., *args, **kwargs):
         return len(self.options)
@@ -30,9 +37,17 @@ class OptionTableModel(QAbstractTableModel):
         else:
             return None
 
+    def flags(self, index):
+        flags = super(self.__class__, self).flags(index)
+        if index.column() == 1:
+            flags |= Qt.ItemIsEditable
+        # elif index.column() in (5, 6):
+        #     flags |= Qt.ItemIsUserCheckable
+        return flags
+
     def data(self, index: QModelIndex, role: int = ...):
         if role == Qt.DisplayRole:
-            return self.columns[index.row()][index.column()]
+            return self.options[index.row()][index.column()]
         elif role == Qt.FontRole:
             return None
         elif role == Qt.ForegroundRole:
@@ -45,10 +60,25 @@ class OptionTableModel(QAbstractTableModel):
         else:
             return None
 
+    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
+        if not index.isValid():
+            return False
+
+        if role == Qt.EditRole or role == Qt.CheckStateRole:
+            if value == '':
+                return False
+            self.options[index.row()][1] = value
+        self.dataChanged.emit(index, index)
+        self.option_modified.emit()
+        return True
+
     def clear(self):
         self.beginResetModel()
-        self.options = []
+        self.options = default_options
         self.endResetModel()
+
+    def to_dict(self):
+        return {o[0]: o[2](o[1]) for o in self.options if o[1] is not None}
 
 
 class ColumnTableModel(QAbstractTableModel):
@@ -94,7 +124,6 @@ class ColumnTableModel(QAbstractTableModel):
         self.endResetModel()
 
     def add_column(self, csv_name, data_type, new_name):
-        # TODO create function to add column to the model
         self.beginInsertRows(self.index(len(self.columns), 1), len(self.columns), len(self.columns))
         self.columns.append([csv_name, data_type, new_name])
         self.endInsertRows()
@@ -144,7 +173,7 @@ class DataFrameTableModel(QAbstractTableModel):
 
     def data(self, index: QModelIndex, role: int = ...):
         if role == Qt.DisplayRole:
-            return self.dataframe.iloc[index.row()][index.column()]
+            return str(self.dataframe.iloc[index.row()][index.column()])
         elif role == Qt.FontRole:
             return None
         elif role == Qt.ForegroundRole:
@@ -166,6 +195,8 @@ class ReadCSVModel(object):
         self.columns_model = ColumnTableModel()
         self.preview_model = DataFrameTableModel()
         self._preview_raw_data = None
+        # connect
+        self.options_model.option_modified.connect(self.update_preview)
 
     @property
     def csv_path(self):
@@ -178,7 +209,13 @@ class ReadCSVModel(object):
             self._preview_raw_data = input_data.readline()
             for i in range(15):
                 self._preview_raw_data += input_data.readline()
-        self.preview_model.dataframe = pd.read_csv(io.StringIO(self._preview_raw_data), sep=';')
+        self.update_preview()
+
+    def update_preview(self):
+        opts = self.options_model.to_dict()
+        print(opts)
+        self.preview_model.dataframe = pd.read_csv(io.StringIO(self._preview_raw_data), **opts)
+        # update of columns
+        self.columns_model.clear()
         for c in self.preview_model.dataframe.columns:
             self.columns_model.add_column(c, '', c)
-

@@ -42,8 +42,7 @@ class ReadCSVController(object):
             logger.info("User has canceled file selection")
 
     def get_data_with_dialog(self):
-        re = self.view.exec_()
-        return None
-
-    def _read_csv_file(self, path, options):
-        df = pd.read_csv(path, **options)
+        if self.view.exec_():
+            return pd.read_csv(self.model.csv_path, **self.model.options_model.to_dict())
+        else:
+            return None
