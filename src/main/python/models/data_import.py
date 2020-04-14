@@ -16,6 +16,7 @@ default_options = [['sep', ',', str], ['skiprows', None, int], ['decimal', '.', 
 
 class OptionTableModel(QAbstractTableModel):
     option_modified = Signal()
+    date_format_required = Signal()
 
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
@@ -70,6 +71,8 @@ class OptionTableModel(QAbstractTableModel):
             self.options[index.row()][1] = value
         self.dataChanged.emit(index, index)
         self.option_modified.emit()
+        if self.options[index.row()][0] == 'parse_dates':
+            self.date_format_required.emit()
         return True
 
     def clear(self):
@@ -194,9 +197,11 @@ class ReadCSVModel(object):
         self.options_model = OptionTableModel()
         self.columns_model = ColumnTableModel()
         self.preview_model = DataFrameTableModel()
+        self.date_format = ''
         self._preview_raw_data = None
         # connect
         self.options_model.option_modified.connect(self.update_preview)
+        self.options_model.date_format_required.connect(self.date_format_dialog)
 
     @property
     def csv_path(self):
@@ -219,3 +224,6 @@ class ReadCSVModel(object):
         self.columns_model.clear()
         for c in self.preview_model.dataframe.columns:
             self.columns_model.add_column(c, '', c)
+
+    def date_format_dialog(self):
+        print('date_format_dialog')
