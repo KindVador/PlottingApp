@@ -4,9 +4,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 from fbs_runtime.application_context.PySide2 import ApplicationContext
-from PySide2.QtWidgets import QMainWindow
 
-from controllers.main import QtMainController
+from plotting_app.controllers.main import QtMainController
 
 __version__ = '2020.1.0a1'
 
@@ -25,7 +24,7 @@ if __name__ == '__main__':
     logger.addHandler(log_handler)
     logger.info(f"logging level: {root_level}")
 
-    mc = QtMainController(sys.argv, __version__)
+    mc = QtMainController(appctxt, __version__)
     mc()
 
     # window = QMainWindow()

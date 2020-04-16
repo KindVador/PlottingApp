@@ -5,9 +5,9 @@ import logging
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QApplication
 
-from views.main import MainWindow
-from models.main import PlotModel
-from controllers.data_import import ReadCSVController
+from plotting_app.views.main import MainWindow
+from plotting_app.models.main import PlotModel
+from plotting_app.controllers.data_import import ReadCSVController
 
 logger = logging.getLogger("PlottingApp")
 
@@ -24,10 +24,10 @@ class QtMainController(object):
 
     """
 
-    def __init__(self, argv, version):
+    def __init__(self, ctx, version):
         super(self.__class__, self).__init__()
         logger.info("creation of the main controller")
-        self.app = QApplication(argv)
+        self.app = ctx.app
         self.app.setStyle('fusion')
         self.model = PlotModel()
         self.view = MainWindow(version)

@@ -1,6 +1,6 @@
 {
     "app_name": "PlottingApp",
     "author": "Florian Contival",
-    "main_module": "src/main/python/main.py",
+    "main_module": "src/main/python/plotting_app/main.py",
     "version": "0.0.0"
 }

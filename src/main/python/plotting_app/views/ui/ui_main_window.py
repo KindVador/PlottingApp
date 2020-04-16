@@ -224,4 +224,4 @@ class Ui_MainWindow(object):
         self.actionOpen.setText(QtWidgets.QApplication.translate("MainWindow", "Open", None, -1))
         self.actionAbout.setText(QtWidgets.QApplication.translate("MainWindow", "About", None, -1))
 
-from views.widgets import MatplotlibWidget
+from plotting_app.views.widgets import MatplotlibWidget

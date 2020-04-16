@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from PySide2.QtWidgets import QDialog
 
-from .ui.ui_csv_config_widget import Ui_CSVConfigDialog
+from plotting_app.views.ui.ui_csv_config_widget import Ui_CSVConfigDialog
 
 
 class ReadCSVDialog(QDialog, Ui_CSVConfigDialog):

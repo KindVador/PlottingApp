@@ -2,7 +2,7 @@
 from PySide2.QtCore import Qt, Signal
 from PySide2.QtWidgets import QMainWindow, QPushButton
 
-from .ui.ui_main_window import Ui_MainWindow
+from plotting_app.views.ui.ui_main_window import Ui_MainWindow
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):

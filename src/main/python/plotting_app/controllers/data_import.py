@@ -5,8 +5,8 @@ import logging
 import pandas as pd
 from PySide2.QtWidgets import QFileDialog
 
-from models.data_import import ReadCSVModel
-from views.data_import import ReadCSVDialog
+from plotting_app.models.data_import import ReadCSVModel
+from plotting_app.views.data_import import ReadCSVDialog
 
 logger = logging.getLogger("PlottingApp")
 
