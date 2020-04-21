@@ -3,15 +3,30 @@ import sys
 import logging
 from logging.handlers import RotatingFileHandler
 
-from fbs_runtime.application_context.PySide2 import ApplicationContext
+from fbs_runtime.application_context.PySide2 import ApplicationContext, cached_property
 
 from plotting_app.controllers.main import QtMainController
 
 __version__ = '2020.1.0a1'
 
 
+class AppContext(ApplicationContext):
+
+    def run(self):
+        mc = QtMainController(self, __version__)
+        mc()
+        return self.app.exec_()
+
+    # @cached_property
+    # def img_checked(self):
+    #     return QtGui.QIcon(self.get_resource("images/checked.png"))
+    #
+    # @cached_property
+    # def img_unchecked(self):
+    #     return QtGui.QIcon(self.get_resource("images/unchecked.png"))
+
+
 if __name__ == '__main__':
-    appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext`
 
     # File handler should always be at least INFO level so we need the application root level to be at least at INFO.
     levels = [logging.CRITICAL, logging.ERROR, logging.WARN, logging.INFO, logging.DEBUG]
@@ -24,11 +39,5 @@ if __name__ == '__main__':
     logger.addHandler(log_handler)
     logger.info(f"logging level: {root_level}")
 
-    mc = QtMainController(appctxt, __version__)
-    mc()
-
-    # window = QMainWindow()
-    # window.resize(250, 150)
-    # window.show()
-    exit_code = appctxt.app.exec_()      # 2. Invoke appctxt.app.exec_()
-    sys.exit(exit_code)
+    appctxt = AppContext()
+    sys.exit(appctxt.run())

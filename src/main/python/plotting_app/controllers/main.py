@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import sys
 import logging
 
 from PySide2.QtCore import Qt
@@ -36,7 +35,6 @@ class QtMainController(object):
         logger.info("execution of the main controller")
         self._init_view()
         self.view.show()
-        sys.exit(self.app.exec_())
 
     def _init_view(self):
         logger.info("initialization of the main view")
