@@ -1,13 +1,33 @@
 # -*- coding: utf-8 -*
+import os
 import sys
 import logging
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 from fbs_runtime.application_context.PySide2 import ApplicationContext, cached_property
 
 from plotting_app.controllers.main import QtMainController
 
 __version__ = '2020.1.0a1'
+
+
+CONFIG_DIR = os.path.join(Path.home(), ".plotting_app")
+
+
+class UserConfiguration(object):
+
+    def __init__(self):
+        pass
+
+    def load(self):
+        """
+        Loads configuration from disk (Home directory)
+
+        Returns:
+
+        """
+        pass
 
 
 class AppContext(ApplicationContext):

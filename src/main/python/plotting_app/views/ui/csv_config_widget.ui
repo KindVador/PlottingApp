@@ -134,7 +134,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableView" name="preview_table"/>
+    <widget class="QTableView" name="preview_table">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

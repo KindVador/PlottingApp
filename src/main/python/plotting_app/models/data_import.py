@@ -4,7 +4,7 @@ import logging
 import typing
 
 import pandas as pd
-from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal
+from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject
 
 logger = logging.getLogger("PlottingApp")
 
@@ -190,9 +190,12 @@ class DataFrameTableModel(QAbstractTableModel):
             return None
 
 
-class ReadCSVModel(object):
+class ReadCSVModel(QObject):
 
-    def __init__(self):
+    date_format_required = Signal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self._csv_path = None
         self.options_model = OptionTableModel()
         self.columns_model = ColumnTableModel()
@@ -227,3 +230,4 @@ class ReadCSVModel(object):
 
     def date_format_dialog(self):
         print('date_format_dialog')
+        self.date_format_required.emit()

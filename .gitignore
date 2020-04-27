@@ -1,5 +1,7 @@
 *.pyc
 PlottingApp.log
 .idea/
+venv/
 
 test_data/
+target/

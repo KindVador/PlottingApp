@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'csv_config_widget.ui',
 # licensing of 'csv_config_widget.ui' applies.
 #
-# Created: Sat Mar 21 12:15:59 2020
+# Created: Sun Apr 26 10:39:37 2020
 #      by: pyside2-uic  running on PySide2 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -83,6 +83,7 @@ class Ui_CSVConfigDialog(object):
         self.preview_label.setObjectName("preview_label")
         self.verticalLayout.addWidget(self.preview_label)
         self.preview_table = QtWidgets.QTableView(CSVConfigDialog)
+        self.preview_table.setAlternatingRowColors(True)
         self.preview_table.setObjectName("preview_table")
         self.verticalLayout.addWidget(self.preview_table)
         self.buttonBox = QtWidgets.QDialogButtonBox(CSVConfigDialog)

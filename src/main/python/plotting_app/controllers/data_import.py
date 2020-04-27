@@ -4,9 +4,10 @@ import logging
 
 import pandas as pd
 from PySide2.QtWidgets import QFileDialog
+from PySide2.QtCore import Slot
 
 from plotting_app.models.data_import import ReadCSVModel
-from plotting_app.views.data_import import ReadCSVDialog
+from plotting_app.views.data_import import ReadCSVDialog, DateFormatDialog
 
 logger = logging.getLogger("PlottingApp")
 
@@ -28,6 +29,7 @@ class ReadCSVController(object):
         self.view.columns_table.setModel(self.model.columns_model)
         self.view.options_table.setModel(self.model.options_model)
         self.view.preview_table.setModel(self.model.preview_model)
+        self.model.date_format_required.connect(self._ask_date_format)
 
     def _select_file(self):
         logger.info("SELECT FILE ACTION")
@@ -46,3 +48,7 @@ class ReadCSVController(object):
             return pd.read_csv(self.model.csv_path, **self.model.options_model.to_dict())
         else:
             return None
+
+    @Slot()
+    def _ask_date_format(self):
+        date_format = DateFormatDialog().exec_()
