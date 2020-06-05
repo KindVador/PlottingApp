@@ -4,7 +4,7 @@ import logging
 import typing
 
 import pandas as pd
-from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject
+from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject, QAbstractItemModel
 
 logger = logging.getLogger("PlottingApp")
 
@@ -190,6 +190,46 @@ class DataFrameTableModel(QAbstractTableModel):
             return None
 
 
+class DateFormatModel(QAbstractItemModel):
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self._items = []
+
+    def add_item(self, item_tuple):
+        if isinstance(item_tuple, tuple):
+            self._items.append(item_tuple)
+        else:
+            return
+
+    def headerData(self, section, orientation, role=None):
+        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+            if section == 0:
+                return "NAME"
+            else:
+                return "FORMAT"
+        else:
+            return None
+
+    def rowCount(self, parent=None, *args, **kwargs):
+        return len(self._items)
+
+    def index(self, row, column, parent=None, *args, **kwargs):
+        return self.createIndex(row, column)
+
+    def parent(self, index):
+        return QModelIndex()
+
+    def columnCount(self, parent=None, *args, **kwargs):
+        return 2
+
+    def data(self, index, role=None):
+        if role == Qt.DisplayRole:
+            return self._items[index.row()][index.column()]
+        else:
+            return None
+
+
 class ReadCSVModel(QObject):
 
     date_format_required = Signal()
@@ -200,11 +240,18 @@ class ReadCSVModel(QObject):
         self.options_model = OptionTableModel()
         self.columns_model = ColumnTableModel()
         self.preview_model = DataFrameTableModel()
+        self.date_format_model = DateFormatModel()
         self.date_format = ''
         self._preview_raw_data = None
         # connect
         self.options_model.option_modified.connect(self.update_preview)
         self.options_model.date_format_required.connect(self.date_format_dialog)
+
+        # populate model with DateFormat
+        # TODO load items from user config file
+        self.date_format_model.add_item(('TDA1', 'q-hh-mm-ss'))
+        self.date_format_model.add_item(('TDA2', 'q-hh:mm:ss.us'))
+
 
     @property
     def csv_path(self):

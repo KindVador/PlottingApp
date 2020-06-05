@@ -4,7 +4,7 @@ import typing
 
 import pandas as pd
 import PySide2
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QAbstractItemModel
 from PySide2.QtGui import QStandardItem, QStandardItemModel
 from PySide2.QtWidgets import QTreeWidgetItem
 
@@ -134,4 +134,5 @@ class VariableTreeModel(QStandardItemModel):
     #     else:
     #         print("parent is None")
     #         return None
+
 

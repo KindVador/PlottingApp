@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>96</height>
+    <width>317</width>
+    <height>288</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -30,26 +30,39 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="date_format_cbx">
-       <property name="minimumSize">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
         <size>
-         <width>200</width>
-         <height>0</height>
+         <width>40</width>
+         <height>20</height>
         </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="add_date_fmt_btn">
+       <property name="text">
+        <string>Add</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="new_date_format_button">
+      <widget class="QPushButton" name="remove_date_fmt_btn">
        <property name="text">
-        <string>New</string>
+        <string>Remove</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="QTableView" name="table_view"/>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="button_box">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
        <horstretch>0</horstretch>
@@ -69,7 +82,7 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>button_box</sender>
    <signal>accepted()</signal>
    <receiver>DateFormatDialog</receiver>
    <slot>accept()</slot>
@@ -85,7 +98,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>button_box</sender>
    <signal>rejected()</signal>
    <receiver>DateFormatDialog</receiver>
    <slot>reject()</slot>

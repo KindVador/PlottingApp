@@ -28,6 +28,7 @@ class QtMainController(object):
         logger.info("creation of the main controller")
         self.app = ctx.app
         self.app.setStyle('fusion')
+        self.cfg = ctx.cfg
         self.model = PlotModel()
         self.view = MainWindow(version)
 

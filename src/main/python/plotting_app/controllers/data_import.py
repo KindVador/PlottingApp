@@ -51,4 +51,6 @@ class ReadCSVController(object):
 
     @Slot()
     def _ask_date_format(self):
-        date_format = DateFormatDialog().exec_()
+        dlg = DateFormatDialog()
+        dlg.table_view.setModel(self.model.date_format_model)
+        date_format = dlg.exec_()

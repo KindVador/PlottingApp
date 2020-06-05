@@ -14,20 +14,20 @@ class ReadCSVDialog(QDialog, Ui_CSVConfigDialog):
         self.setupUi(self)
 
 
-class NewDateFormatDialog(QDialog, Ui_NewDateFormatDialog):
-
-    new_date_format = Signal(str)
-
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
-        self.setWindowTitle("New Date format")
-        self.add_button.clicked.connect(self.submit_and_close)
-        self.cancel_button.clicked.connect(self.close)
-
-    def submit_and_close(self):
-        self.new_date_format.emit(self.date_format_lineedit.text())
-        self.accept()
+# class NewDateFormatDialog(QDialog, Ui_NewDateFormatDialog):
+#
+#     new_date_format = Signal(str)
+#
+#     def __init__(self):
+#         super().__init__()
+#         self.setupUi(self)
+#         self.setWindowTitle("New Date format")
+#         self.add_button.clicked.connect(self.submit_and_close)
+#         self.cancel_button.clicked.connect(self.close)
+#
+#     def submit_and_close(self):
+#         self.new_date_format.emit(self.date_format_lineedit.text())
+#         self.accept()
 
 
 class DateFormatDialog(QDialog, Ui_DateFormatDialog):
@@ -39,13 +39,12 @@ class DateFormatDialog(QDialog, Ui_DateFormatDialog):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("Select Date format")
-        self.new_date_fmt_dlg = NewDateFormatDialog()
-        self.new_date_fmt_dlg.new_date_format.connect(self._create_new_date_format)
-        self.new_date_format_button.clicked.connect(self.new_date_fmt_dlg.exec_)
+        self.add_date_fmt_btn.clicked.connect(self._add_new_date_format)
 
-    def _create_new_date_format(self, date_format):
-        self.date_format_cbx.addItem(date_format)
-        self.new_date_format_created.emit(date_format)
+    def _add_new_date_format(self, date_format):
+        # self.date_format_cbx.addItem(date_format)
+        # self.new_date_format_created.emit(date_format)
+        pass
 
     def submit_and_close(self):
         self.selected_date_format.emit(self.date_format_cbx.currentText())
