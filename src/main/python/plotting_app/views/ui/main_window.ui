@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1025</width>
+    <width>1066</width>
     <height>600</height>
    </rect>
   </property>
@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="variables_layout" stretch="0,0,0">
+     <layout class="QVBoxLayout" name="variables_layout" stretch="0">
       <property name="spacing">
        <number>5</number>
       </property>
@@ -67,93 +67,6 @@
          </property>
         </column>
        </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="options1_layout">
-        <item>
-         <widget class="QCheckBox" name="btn_raw_value">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>RAW VALUE</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="btn_label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>LABEL</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="btn_sdi">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>SDI</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="btn_ssm">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>SSM</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="options2_layout">
-        <item>
-         <widget class="QCheckBox" name="btn_parity">
-          <property name="text">
-           <string>PARITY</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="btn_bit">
-          <property name="text">
-           <string>BIT NB:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QSpinBox" name="bit_spinbox">
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>32</number>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
      </layout>
     </item>
@@ -380,8 +293,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1025</width>
-     <height>21</height>
+     <width>1066</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

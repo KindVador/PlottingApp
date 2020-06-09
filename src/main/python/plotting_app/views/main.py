@@ -31,101 +31,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.marker_cbx.setCurrentText("'.'")
         self.line_style_cbx.setCurrentText("'-'")
         self.draw_style_cbx.setCurrentText('steps-post')
-        # make connections
-        self.btn_raw_value.clicked.connect(self._btn_raw_value_clicked)
-        self.btn_label.clicked.connect(self._btn_label_clicked)
-        self.btn_sdi.clicked.connect(self._btn_sdi_clicked)
-        self.btn_ssm.clicked.connect(self._btn_ssm_clicked)
-        self.btn_parity.clicked.connect(self._btn_parity_clicked)
-        self.btn_bit.clicked.connect(self._btn_bit_clicked)
-        self.bit_spinbox.valueChanged.connect(self._btn_bit_clicked)
 
     def show_hide_variables_panel(self):
-        self.btn_raw_value.setVisible(not self.btn_raw_value.isVisible())
-        self.btn_label.setVisible(not self.btn_label.isVisible())
-        self.btn_sdi.setVisible(not self.btn_sdi.isVisible())
-        self.btn_ssm.setVisible(not self.btn_ssm.isVisible())
-        self.btn_parity.setVisible(not self.btn_parity.isVisible())
-        self.btn_bit.setVisible(not self.btn_bit.isVisible())
-        self.bit_spinbox.setVisible(not self.bit_spinbox.isVisible())
         self.parameters_tree_widget.setVisible(not self.parameters_tree_widget.isVisible())
 
-    def enable_arinc_buttons(self, state):
-        self.btn_raw_value.setChecked(True)
-        self.btn_raw_value.setEnabled(state)
-        self.btn_label.setChecked(False)
-        self.btn_label.setEnabled(state)
-        self.btn_sdi.setChecked(False)
-        self.btn_sdi.setEnabled(state)
-        self.btn_ssm.setChecked(False)
-        self.btn_ssm.setEnabled(state)
-        self.btn_parity.setChecked(False)
-        self.btn_parity.setEnabled(state)
-        self.btn_bit.setEnabled(state)
-        self.btn_bit.setChecked(False)
-        self.bit_spinbox.setEnabled(state)
-
-    def _btn_bit_clicked(self):
-        self.btn_raw_value.setChecked(False)
-        self.btn_label.setChecked(False)
-        self.btn_parity.setChecked(False)
-        self.btn_ssm.setChecked(False)
-        self.btn_sdi.setChecked(False)
-        self.btn_bit.setChecked(True)
-
-    def _btn_raw_value_clicked(self):
-        self.btn_label.setChecked(False)
-        self.btn_parity.setChecked(False)
-        self.btn_ssm.setChecked(False)
-        self.btn_sdi.setChecked(False)
-        self.btn_bit.setChecked(False)
-
-    def _btn_label_clicked(self):
-        self.btn_raw_value.setChecked(False)
-        self.btn_parity.setChecked(False)
-        self.btn_ssm.setChecked(False)
-        self.btn_sdi.setChecked(False)
-        self.btn_bit.setChecked(False)
-
-    def _btn_parity_clicked(self):
-        self.btn_raw_value.setChecked(False)
-        self.btn_label.setChecked(False)
-        self.btn_ssm.setChecked(False)
-        self.btn_sdi.setChecked(False)
-        self.btn_bit.setChecked(False)
-
-    def _btn_ssm_clicked(self):
-        self.btn_raw_value.setChecked(False)
-        self.btn_parity.setChecked(False)
-        self.btn_label.setChecked(False)
-        self.btn_sdi.setChecked(False)
-        self.btn_bit.setChecked(False)
-
-    def _btn_sdi_clicked(self):
-        self.btn_raw_value.setChecked(False)
-        self.btn_parity.setChecked(False)
-        self.btn_label.setChecked(False)
-        self.btn_ssm.setChecked(False)
-        self.btn_bit.setChecked(False)
-
     def get_filter_extension(self):
-        if self.btn_raw_value.isEnabled():
-            if self.btn_raw_value.isChecked():
-                return ''
-            elif self.btn_ssm.isChecked():
-                return ';SSM'
-            elif self.btn_sdi.isChecked():
-                return ';SDI'
-            elif self.btn_parity.isChecked():
-                return ';P'
-            elif self.btn_label.isChecked():
-                return ';LBL'
-            elif self.btn_bit.isChecked():
-                return f';BIT{self.bit_spinbox.value():02d}'
-            else:
-                return ''
-        else:
-            return ''
+        # TODO to be modified for contextual menu feature
+        return ''
 
     def clear_all_plots(self):
         for i in range(len(self.axe_buttons)):

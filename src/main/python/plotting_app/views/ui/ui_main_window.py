@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main_window.ui',
 # licensing of 'main_window.ui' applies.
 #
-# Created: Sat Mar 14 19:23:03 2020
+# Created: Tue Jun  9 14:02:59 2020
 #      by: pyside2-uic  running on PySide2 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1025, 600)
+        MainWindow.resize(1066, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -34,56 +34,6 @@ class Ui_MainWindow(object):
         self.parameters_tree_widget.setObjectName("parameters_tree_widget")
         self.parameters_tree_widget.headerItem().setText(0, "1")
         self.variables_layout.addWidget(self.parameters_tree_widget)
-        self.options1_layout = QtWidgets.QHBoxLayout()
-        self.options1_layout.setObjectName("options1_layout")
-        self.btn_raw_value = QtWidgets.QCheckBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_raw_value.sizePolicy().hasHeightForWidth())
-        self.btn_raw_value.setSizePolicy(sizePolicy)
-        self.btn_raw_value.setChecked(True)
-        self.btn_raw_value.setObjectName("btn_raw_value")
-        self.options1_layout.addWidget(self.btn_raw_value)
-        self.btn_label = QtWidgets.QCheckBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_label.sizePolicy().hasHeightForWidth())
-        self.btn_label.setSizePolicy(sizePolicy)
-        self.btn_label.setObjectName("btn_label")
-        self.options1_layout.addWidget(self.btn_label)
-        self.btn_sdi = QtWidgets.QCheckBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_sdi.sizePolicy().hasHeightForWidth())
-        self.btn_sdi.setSizePolicy(sizePolicy)
-        self.btn_sdi.setObjectName("btn_sdi")
-        self.options1_layout.addWidget(self.btn_sdi)
-        self.btn_ssm = QtWidgets.QCheckBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.btn_ssm.sizePolicy().hasHeightForWidth())
-        self.btn_ssm.setSizePolicy(sizePolicy)
-        self.btn_ssm.setObjectName("btn_ssm")
-        self.options1_layout.addWidget(self.btn_ssm)
-        self.variables_layout.addLayout(self.options1_layout)
-        self.options2_layout = QtWidgets.QHBoxLayout()
-        self.options2_layout.setObjectName("options2_layout")
-        self.btn_parity = QtWidgets.QCheckBox(self.centralwidget)
-        self.btn_parity.setObjectName("btn_parity")
-        self.options2_layout.addWidget(self.btn_parity)
-        self.btn_bit = QtWidgets.QCheckBox(self.centralwidget)
-        self.btn_bit.setObjectName("btn_bit")
-        self.options2_layout.addWidget(self.btn_bit)
-        self.bit_spinbox = QtWidgets.QSpinBox(self.centralwidget)
-        self.bit_spinbox.setMinimum(1)
-        self.bit_spinbox.setMaximum(32)
-        self.bit_spinbox.setObjectName("bit_spinbox")
-        self.options2_layout.addWidget(self.bit_spinbox)
-        self.variables_layout.addLayout(self.options2_layout)
         self.horizontalLayout.addLayout(self.variables_layout)
         self.buttons_frame = QtWidgets.QFrame(self.centralwidget)
         self.buttons_frame.setMaximumSize(QtCore.QSize(45, 16777215))
@@ -177,7 +127,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setStretch(2, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar()
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1025, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1066, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -205,12 +155,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "MainWindow", None, -1))
         self.parameters_tree_widget.setSortingEnabled(True)
-        self.btn_raw_value.setText(QtWidgets.QApplication.translate("MainWindow", "RAW VALUE", None, -1))
-        self.btn_label.setText(QtWidgets.QApplication.translate("MainWindow", "LABEL", None, -1))
-        self.btn_sdi.setText(QtWidgets.QApplication.translate("MainWindow", "SDI", None, -1))
-        self.btn_ssm.setText(QtWidgets.QApplication.translate("MainWindow", "SSM", None, -1))
-        self.btn_parity.setText(QtWidgets.QApplication.translate("MainWindow", "PARITY", None, -1))
-        self.btn_bit.setText(QtWidgets.QApplication.translate("MainWindow", "BIT NB:", None, -1))
         self.parameters_btn.setText(QtWidgets.QApplication.translate("MainWindow", "<>", None, -1))
         self.add_btn.setText(QtWidgets.QApplication.translate("MainWindow", ">>>", None, -1))
         self.btn_clear_plots.setText(QtWidgets.QApplication.translate("MainWindow", "Clear all", None, -1))
@@ -224,4 +168,4 @@ class Ui_MainWindow(object):
         self.actionOpen.setText(QtWidgets.QApplication.translate("MainWindow", "Open", None, -1))
         self.actionAbout.setText(QtWidgets.QApplication.translate("MainWindow", "About", None, -1))
 
-from plotting_app.views.widgets import MatplotlibWidget
+from views.widgets import MatplotlibWidget
