@@ -8,9 +8,9 @@ from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject
 
 logger = logging.getLogger("PlottingApp")
 
-default_options = [['sep', ',', str], ['skiprows', None, int], ['decimal', '.', str], ['header', 'infer', str],
-                   ['index_col', None, int], ['na_values', None, str], ['nrows', None, int],
-                   ['parse_dates', False, bool], ['keep_date_col', False, bool], ['comment', None, str],
+default_options = [['sep', ';', str], ['skiprows', None, int], ['decimal', '.', str], ['header', 'infer', str],
+                   ['index_col', None, int], ['na_values', "?", str], ['nrows', None, int],
+                   ['parse_dates', False, bool], ['keep_date_col', False, bool], ['comment', "#", str],
                    ['encoding', None, str]]
 
 
@@ -196,11 +196,18 @@ class DateFormatModel(QAbstractItemModel):
         super().__init__(parent=parent)
         self._items = []
 
-    def add_item(self, item_tuple):
+    def add_item(self, item_tuple=("", "")):
+        print("DateFormatModel.add_item(", item_tuple, ")")
         if isinstance(item_tuple, tuple):
+            self.beginInsertRows(QModelIndex(), len(self._items), len(self._items))
             self._items.append(item_tuple)
+            self.endInsertRows()
         else:
+            # TODO log an error or throw an exception
             return
+
+    def remove_item(self, index):
+        print("DateFormatModel.remove_item(", index, ")")
 
     def headerData(self, section, orientation, role=None):
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
@@ -223,11 +230,26 @@ class DateFormatModel(QAbstractItemModel):
     def columnCount(self, parent=None, *args, **kwargs):
         return 2
 
+    def flags(self, index):
+        fl = Qt.ItemIsEnabled
+        fl |= Qt.ItemIsSelectable
+        fl |= Qt.ItemIsEditable
+        return fl
+
     def data(self, index, role=None):
         if role == Qt.DisplayRole:
             return self._items[index.row()][index.column()]
         else:
             return None
+
+    def setData(self, index, value, role=None):
+        if role == Qt.EditRole:
+            if index.column() == 0:
+                self._items[index.row()] = (value, self._items[index.row()][1])
+            elif index.column() == 1:
+                self._items[index.row()] = (self._items[index.row()][0], value)
+            self.dataChanged.emit(index, index)
+            return True
 
 
 class ReadCSVModel(QObject):
@@ -241,17 +263,16 @@ class ReadCSVModel(QObject):
         self.columns_model = ColumnTableModel()
         self.preview_model = DataFrameTableModel()
         self.date_format_model = DateFormatModel()
-        self.date_format = ''
+        self._date_format = ''
         self._preview_raw_data = None
         # connect
         self.options_model.option_modified.connect(self.update_preview)
-        self.options_model.date_format_required.connect(self.date_format_dialog)
+        self.options_model.date_format_required.connect(self.date_format_required.emit)
 
         # populate model with DateFormat
         # TODO load items from user config file
         self.date_format_model.add_item(('TDA1', 'q-hh-mm-ss'))
         self.date_format_model.add_item(('TDA2', 'q-hh:mm:ss.us'))
-
 
     @property
     def csv_path(self):
@@ -266,6 +287,18 @@ class ReadCSVModel(QObject):
                 self._preview_raw_data += input_data.readline()
         self.update_preview()
 
+    @property
+    def date_format(self):
+        return self._date_format
+
+    @date_format.setter
+    def date_format(self, value):
+        if isinstance(value, str):
+            self._date_format = value
+        else:
+            # TODO log an error or throw an exception
+            pass
+
     def update_preview(self):
         opts = self.options_model.to_dict()
         print(opts)
@@ -274,7 +307,3 @@ class ReadCSVModel(QObject):
         self.columns_model.clear()
         for c in self.preview_model.dataframe.columns:
             self.columns_model.add_column(c, '', c)
-
-    def date_format_dialog(self):
-        print('date_format_dialog')
-        self.date_format_required.emit()

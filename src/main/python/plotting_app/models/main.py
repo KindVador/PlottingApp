@@ -77,6 +77,16 @@ class PlotModel(object):
         self.plots.pop(index)
 
 
+class VariableItem(QStandardItem):
+    """
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(VariableItem, self).__init__(*args, **kwargs)
+        self.filter = None
+
+
 class VariableTreeModel(QStandardItemModel):
     def __init__(self, parent=None, variables=None):
         super(self.__class__, self).__init__(parent)
@@ -84,7 +94,7 @@ class VariableTreeModel(QStandardItemModel):
         self.root = self.invisibleRootItem()
         if variables:
             for v in variables:
-                item = QStandardItem(v)
+                item = VariableItem(v)
                 self.root.appendRow(item)
 
     def headerData(self, section:int, orientation:PySide2.QtCore.Qt.Orientation, role:int=...) -> typing.Any:

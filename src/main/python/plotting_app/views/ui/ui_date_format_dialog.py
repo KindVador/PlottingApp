@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'date_format_dialog.ui',
 # licensing of 'date_format_dialog.ui' applies.
 #
-# Created: Sat Jun  6 01:03:49 2020
+# Created: Sat Jun 13 17:36:47 2020
 #      by: pyside2-uic  running on PySide2 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -36,6 +36,8 @@ class Ui_DateFormatDialog(object):
         self.horizontalLayout.addWidget(self.remove_date_fmt_btn)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.table_view = QtWidgets.QTableView(DateFormatDialog)
+        self.table_view.setAlternatingRowColors(True)
+        self.table_view.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.table_view.setObjectName("table_view")
         self.verticalLayout.addWidget(self.table_view)
         self.button_box = QtWidgets.QDialogButtonBox(DateFormatDialog)

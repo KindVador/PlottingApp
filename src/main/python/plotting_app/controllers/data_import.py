@@ -49,8 +49,12 @@ class ReadCSVController(object):
         else:
             return None
 
-    @Slot()
+    def set_date_format(self, date_format):
+        print("ReadCSVController.set_date_format(", date_format, ")")
+        self.model._date_format = date_format
+
+    @Slot(name="ask_date_format")
     def _ask_date_format(self):
-        dlg = DateFormatDialog()
-        dlg.table_view.setModel(self.model.date_format_model)
-        date_format = dlg.exec_()
+        dlg = DateFormatDialog(self.model.date_format_model)
+        dlg.selected_date_format.connect(self.set_date_format)
+        dlg.exec_()
