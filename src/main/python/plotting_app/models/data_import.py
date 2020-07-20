@@ -65,7 +65,7 @@ class OptionTableModel(QAbstractTableModel):
         if not index.isValid():
             return False
 
-        if role == Qt.EditRole or role == Qt.CheckStateRole:
+        if role in [Qt.EditRole, Qt.CheckStateRole]:
             if value == '':
                 return False
             self.options[index.row()][1] = value
@@ -131,6 +131,9 @@ class ColumnTableModel(QAbstractTableModel):
         self.columns.append([csv_name, data_type, new_name])
         self.endInsertRows()
 
+    def to_dict(self):
+        return {c[0]: (c[2], c[1]) for c in self.columns if c[1] is not None}
+
 
 class DataFrameTableModel(QAbstractTableModel):
 
@@ -195,6 +198,7 @@ class DateFormatModel(QAbstractItemModel):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._items = []
+        self.is_dirty = False
 
     def add_item(self, item_tuple=("", "")):
         print("DateFormatModel.add_item(", item_tuple, ")")
@@ -202,12 +206,14 @@ class DateFormatModel(QAbstractItemModel):
             self.beginInsertRows(QModelIndex(), len(self._items), len(self._items))
             self._items.append(item_tuple)
             self.endInsertRows()
+            self.is_dirty = True
         else:
             # TODO log an error or throw an exception
             return
 
     def remove_item(self, index):
         print("DateFormatModel.remove_item(", index, ")")
+        self.is_dirty = True
 
     def headerData(self, section, orientation, role=None):
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
@@ -231,10 +237,9 @@ class DateFormatModel(QAbstractItemModel):
         return 2
 
     def flags(self, index):
-        fl = Qt.ItemIsEnabled
-        fl |= Qt.ItemIsSelectable
-        fl |= Qt.ItemIsEditable
-        return fl
+        flags = super(self.__class__, self).flags(index)
+        flags |= Qt.ItemIsEditable
+        return flags
 
     def data(self, index, role=None):
         if role == Qt.DisplayRole:
@@ -283,7 +288,7 @@ class ReadCSVModel(QObject):
         self._csv_path = file_path
         with open(file_path, mode='r') as input_data:
             self._preview_raw_data = input_data.readline()
-            for i in range(15):
+            for _ in range(15):
                 self._preview_raw_data += input_data.readline()
         self.update_preview()
 

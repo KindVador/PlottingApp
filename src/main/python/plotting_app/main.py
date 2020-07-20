@@ -10,6 +10,7 @@ import shutil
 from fbs_runtime.application_context.PySide2 import ApplicationContext, cached_property
 
 from plotting_app.controllers.main import QtMainController
+from plotting_app.models.configuration import UserConfigurationModel
 
 __version__ = '2020.1.0a1'
 
@@ -17,7 +18,7 @@ __version__ = '2020.1.0a1'
 CONFIG_DIR = os.path.join(str(Path.home()), ".plotting_app")
 
 
-class UserConfiguration(ConfigParser):
+class UserConfiguration(object):
     """
     Class to handle user's preferences for the whole application.
 
@@ -29,18 +30,24 @@ class UserConfiguration(ConfigParser):
         super().__init__(*args, **kwargs)
         self.file_name = file_name
         self.folder = folder
+        self.model = UserConfiguration()
+
         # check if folder config exists
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
         # check if the file exists
         if not os.path.exists(self.filepath):
             self._create_defaults_user_config()
-        # read file
-        self.read(os.path.join(self.folder, self.file_name))
 
     @property
     def filepath(self):
         return os.path.join(self.folder, self.file_name)
+
+    @classmethod
+    def from_ini_file(cls, file_path):
+        parser = ConfigParser()
+        # TODO read complete configuration
+        parser.read(file_path)
 
     def _create_defaults_user_config(self):
         main_path = Path(__file__).parent.absolute().parents[1]
