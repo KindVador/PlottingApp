@@ -30,7 +30,7 @@ class UserConfiguration(object):
         super().__init__(*args, **kwargs)
         self.file_name = file_name
         self.folder = folder
-        self.model = UserConfiguration()
+        self.model = UserConfigurationModel()
 
         # check if folder config exists
         if not os.path.exists(self.folder):
