@@ -7,6 +7,7 @@ from PySide2.QtWidgets import QApplication
 from plotting_app.views.main import MainWindow
 from plotting_app.models.main import PlotModel
 from plotting_app.controllers.data_import import ReadCSVController
+from plotting_app.controllers.configuration import ApplicationConfigurationController
 
 logger = logging.getLogger("PlottingApp")
 
@@ -28,7 +29,7 @@ class QtMainController(object):
         logger.info("creation of the main controller")
         self.app = ctx.app
         self.app.setStyle('fusion')
-        self.cfg = ctx.cfg
+        self.cfg = ApplicationConfigurationController()
         self.model = PlotModel()
         self.view = MainWindow(version)
 
@@ -60,6 +61,8 @@ class QtMainController(object):
     def _open(self):
         logger.info("OPEN ACTION")
         dic = ReadCSVController()
+        # connect signal
+        dic.new_csv_preset.connect(self.cfg.add_csv_preset)
         self.model.dataframe = dic.get_data_with_dialog()
         # updates tree items
         self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)

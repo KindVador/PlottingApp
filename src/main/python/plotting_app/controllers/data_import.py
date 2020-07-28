@@ -4,7 +4,7 @@ import logging
 
 import pandas as pd
 from PySide2.QtWidgets import QFileDialog, QInputDialog, QLineEdit
-from PySide2.QtCore import Slot, QDir
+from PySide2.QtCore import Slot, QDir, Signal, QObject
 
 from plotting_app.models.data_import import ReadCSVModel
 from plotting_app.views.data_import import ReadCSVDialog, DateFormatDialog
@@ -12,9 +12,12 @@ from plotting_app.views.data_import import ReadCSVDialog, DateFormatDialog
 logger = logging.getLogger("PlottingApp")
 
 
-class ReadCSVController(object):
+class ReadCSVController(QObject):
 
-    def __init__(self,):
+    new_csv_preset = Signal(object)
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
         self.model = ReadCSVModel()
         self.view = ReadCSVDialog()
         self._init_view()
@@ -54,6 +57,7 @@ class ReadCSVController(object):
                         "options": self.model.options_model.to_dict(),
                         "columns": self.model.columns_model.to_dict()}
             print(cfg_dict)
+            self.new_csv_preset.emit(cfg_dict)
 
     def get_data_with_dialog(self):
         if self.view.exec_():

@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 
 
-class UserConfigurationModel(object):
+class CsvPresetModel(object):
+
+    def __int__(self):
+        self.name = None
+        self.preset = None
+
+
+class ApplicationConfigurationModel(object):
 
     def __int__(self):
         self._csv_presets = {}
