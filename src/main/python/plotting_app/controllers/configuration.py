@@ -52,3 +52,4 @@ class ApplicationConfigurationController(object):
     def add_csv_preset(self, new_preset):
         print("ApplicationConfigurationController.add_csv_preset")
         print(new_preset)
+        self.model.add_csv_preset(new_preset)

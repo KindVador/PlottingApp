@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
+import logging
 
-
-class CsvPresetModel(object):
-
-    def __int__(self):
-        self.name = None
-        self.preset = None
+logger = logging.getLogger("PlottingApp")
 
 
 class ApplicationConfigurationModel(object):
 
-    def __int__(self):
+    def __init__(self):
+        self.is_dirty = False
         self._csv_presets = {}
 
     @property
@@ -18,8 +15,13 @@ class ApplicationConfigurationModel(object):
         return self._csv_presets
 
     @csv_presets.setter
-    def csv_presets(self, presets: dict):
-        self._csv_presets = presets
+    def csv_presets(self, value: dict):
+        self.is_dirty = True
+        self._csv_presets = value
 
-    def add_csv_preset(self, name: str, preset: dict):
-        self._csv_presets[name] = preset
+    def add_csv_preset(self, preset: dict):
+        if preset['name'] in self.csv_presets:
+            logger.error(f"A preset with the {preset['name']} is already registered")
+        else:
+            self._csv_presets[preset['name']] = preset['options']
+            self.is_dirty = True

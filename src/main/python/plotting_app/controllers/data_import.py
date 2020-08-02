@@ -57,6 +57,8 @@ class ReadCSVController(QObject):
                         "options": self.model.options_model.to_dict(),
                         "columns": self.model.columns_model.to_dict()}
             print(cfg_dict)
+            # update of preset combobox
+            self.view.preset_cbox.addItem(cfg_name)
             self.new_csv_preset.emit(cfg_dict)
 
     def get_data_with_dialog(self):
