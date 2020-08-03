@@ -4,6 +4,7 @@ from pathlib import Path
 from configparser import ConfigParser
 import shutil
 import logging
+import json
 
 from plotting_app.models.configuration import ApplicationConfigurationModel
 from plotting_app.views.configuration import ApplicationConfigurationView
@@ -39,17 +40,29 @@ class ApplicationConfigurationController(object):
         return os.path.join(self.folder, self.file_name)
 
     @classmethod
-    def from_ini_file(cls, file_path):
-        parser = ConfigParser()
-        # TODO read complete configuration
-        parser.read(file_path)
+    def from_json_file(cls, file_path):
+        acc = cls()
+        with open(file_path, mode='r') as f:
+            d = json.load(f)
 
     def _create_defaults_user_config(self):
         main_path = Path(__file__).parent.absolute().parents[1]
         dflt_cfg = main_path.joinpath('data', 'base', 'default.cfg')
         shutil.copyfile(dflt_cfg, self.filepath)
 
+    def load_from_disk(self):
+        # TODO
+        pass
+
+    def save_to_disk(self):
+        with open(self.filepath, mode='w') as f:
+            json.dump(self.model.to_dict(), f, indent=4)
+        # reset flag
+        self.model.is_dirty = False
+
     def add_csv_preset(self, new_preset):
         print("ApplicationConfigurationController.add_csv_preset")
         print(new_preset)
         self.model.add_csv_preset(new_preset)
+        # save new configuration to the disk
+        self.save_to_disk()

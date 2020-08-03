@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 
 logger = logging.getLogger("PlottingApp")
@@ -25,3 +26,6 @@ class ApplicationConfigurationModel(object):
         else:
             self._csv_presets[preset['name']] = preset['options']
             self.is_dirty = True
+
+    def to_dict(self) -> dict:
+        return {'csv_presets': self.csv_presets}
