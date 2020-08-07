@@ -14,17 +14,20 @@ logger = logging.getLogger("PlottingApp")
 
 class ReadCSVController(QObject):
 
-    new_csv_preset = Signal(object)
+    config_updated = Signal()
 
-    def __init__(self):
+    def __init__(self, preset_model):
         super(self.__class__, self).__init__()
-        self.model = ReadCSVModel()
+        self.preset_model = preset_model
+        self.model = ReadCSVModel(parent=self, preset_model=preset_model)
         self.view = ReadCSVDialog()
         self._init_view()
 
     def _init_view(self):
         logger.info("initialization of the main view")
         self._make_view_connections()
+        # connect widgets to models
+        self.view.preset_cbox.setModel(self.model.preset_model)
 
     def _make_view_connections(self):
         logger.info("creation of connections between the main controller and the main view")
@@ -53,13 +56,16 @@ class ReadCSVController(QObject):
         cfg_name, res = QInputDialog.getText(self.view, "Please filk t name", "Configuration's name", QLineEdit.Normal, QDir.home().dirName())
         if res and len(cfg_name) > 0:
             # save current configuration to the user configuration object
-            cfg_dict = {"name": cfg_name,
-                        "options": self.model.options_model.to_dict(),
-                        "columns": self.model.columns_model.to_dict()}
+            cfg_dict = {'name': cfg_name,
+                        'options': self.model.options_model.to_dict(),
+                        'columns': self.model.columns_model.to_dict()}
             print(cfg_dict)
-            # update of preset combobox
-            self.view.preset_cbox.addItem(cfg_name)
-            self.new_csv_preset.emit(cfg_dict)
+            self.model.preset_model.beginResetModel()
+            self.preset_model.add(cfg_dict['name'], cfg_dict['options'], cfg_dict['columns'])
+            self.model.preset_model.endResetModel()
+            # select this new preset in the combobox widget in the view
+            self.view.preset_cbox.setCurrentText(cfg_name)
+            self.config_updated.emit()
 
     def get_data_with_dialog(self):
         if self.view.exec_():

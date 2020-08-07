@@ -60,9 +60,8 @@ class QtMainController(object):
 
     def _open(self):
         logger.info("OPEN ACTION")
-        dic = ReadCSVController()
-        # connect signal
-        dic.new_csv_preset.connect(self.cfg.add_csv_preset)
+        dic = ReadCSVController(preset_model=self.cfg.model['csv_presets'])
+        dic.config_updated.connect(self.cfg.save_to_disk)
         self.model.dataframe = dic.get_data_with_dialog()
         # updates tree items
         self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)

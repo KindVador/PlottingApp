@@ -14,6 +14,31 @@ default_options = [['sep', ';', str], ['skiprows', None, int], ['decimal', '.', 
                    ['encoding', None, str]]
 
 
+class PresetModel(QAbstractItemModel):
+
+    def __init__(self, preset_model):
+        super(self.__class__, self).__init__(parent=None)
+        self.preset_model = preset_model
+
+    def rowCount(self, parent: QModelIndex = ...) -> int:
+        return len(self.preset_model)
+
+    def columnCount(self, parent: QModelIndex = ...) -> int:
+        return 1
+
+    def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
+        if role == Qt.DisplayRole:
+            return self.preset_model.names[index.row()]
+        else:
+            return None
+
+    def index(self, row, column, parent=None, *args, **kwargs):
+        return self.createIndex(row, column)
+
+    def parent(self, index):
+        return QModelIndex()
+
+
 class OptionTableModel(QAbstractTableModel):
     option_modified = Signal()
     date_format_required = Signal()
@@ -261,12 +286,13 @@ class ReadCSVModel(QObject):
 
     date_format_required = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, preset_model=None):
         super().__init__(parent)
         self._csv_path = None
         self.options_model = OptionTableModel()
         self.columns_model = ColumnTableModel()
         self.preview_model = DataFrameTableModel()
+        self.preset_model = PresetModel(preset_model)
         self.date_format_model = DateFormatModel()
         self._date_format = ''
         self._preview_raw_data = None
