@@ -56,12 +56,10 @@ class ReadCSVController(QObject):
         cfg_name, res = QInputDialog.getText(self.view, "Please filk t name", "Configuration's name", QLineEdit.Normal, QDir.home().dirName())
         if res and len(cfg_name) > 0:
             # save current configuration to the user configuration object
-            cfg_dict = {'name': cfg_name,
-                        'options': self.model.options_model.to_dict(),
-                        'columns': self.model.columns_model.to_dict()}
+            cfg_dict = {'name': cfg_name, 'options': self.model.options_model.to_dict()}
             print(cfg_dict)
             self.model.preset_model.beginResetModel()
-            self.preset_model.add(cfg_dict['name'], cfg_dict['options'], cfg_dict['columns'])
+            self.preset_model.add(cfg_dict['name'], cfg_dict['options'])
             self.model.preset_model.endResetModel()
             # select this new preset in the combobox widget in the view
             self.view.preset_cbox.setCurrentText(cfg_name)

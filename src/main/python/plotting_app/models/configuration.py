@@ -29,9 +29,9 @@ class PresetModel(JsonSerializable):
     def __len__(self) -> int:
         return len(self._presets)
 
-    def add(self, name: str, options: dict, columns: dict):
+    def add(self, name: str, options: dict):
         if name not in self._presets:
-            self._presets[name] = {'options': options, 'columns': columns}
+            self._presets[name] = {'options': options}
         else:
             logger.error(f"Preset's name '{name}' already exists in the model")
 
