@@ -8,8 +8,6 @@ import json
 from plotting_app.models.configuration import ApplicationConfigurationModel, JsonSerializable
 from plotting_app.views.configuration import ApplicationConfigurationView
 
-CONFIG_DIR = os.path.join(str(Path.home()), ".plotting_app")
-
 logger = logging.getLogger("PlottingApp")
 
 
@@ -21,7 +19,7 @@ class ApplicationConfigurationController(object):
 
     """
 
-    def __init__(self, file_name='PlottingApp.cfg', folder=CONFIG_DIR):
+    def __init__(self, folder, file_name='PlottingApp.cfg'):
         self.model = ApplicationConfigurationModel()
         self.view = ApplicationConfigurationView()
         self.file_name = file_name

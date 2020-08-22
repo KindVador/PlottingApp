@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*
+import os
+from pathlib import Path
 import sys
 import argparse
 import logging
@@ -9,6 +11,7 @@ from fbs_runtime.application_context.PySide2 import ApplicationContext, cached_p
 from plotting_app.controllers.main import QtMainController
 
 __version__ = '2020.1.0a1'
+CONFIG_DIR = os.path.join(str(Path.home()), ".plotting_app")
 
 
 class AppContext(ApplicationContext):
@@ -20,6 +23,10 @@ class AppContext(ApplicationContext):
     def run(self):
         self.mc()
         return self.app.exec_()
+
+    @property
+    def config_dir(self):
+        return CONFIG_DIR
 
     # @cached_property
     # def img_checked(self):
@@ -38,14 +45,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # File handler should always be at least INFO level so we need the application root level to be at least at INFO.
-    # levels = [logging.CRITICAL, logging.ERROR, logging.WARN, logging.INFO, logging.DEBUG]
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(module)s/%(funcName)s - %(message)s')
     logger = logging.getLogger("PlottingApp")
     if args.debug:
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
-    log_handler = RotatingFileHandler('PlottingApp.log', maxBytes=5000, backupCount=2)
+    log_file = os.path.join(CONFIG_DIR, "PlottingApp.log")
+    log_handler = RotatingFileHandler(log_file, maxBytes=5000, backupCount=2)
     log_handler.setFormatter(formatter)
     logger.addHandler(log_handler)
     logger.info(f"logging level: {logger.level}")
