@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*
 import sys
+import argparse
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -31,16 +32,23 @@ class AppContext(ApplicationContext):
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', help="run application in DEBUG mode", action='store_const', const=True,
+                        default=False, required=False)
+    args = parser.parse_args()
+
     # File handler should always be at least INFO level so we need the application root level to be at least at INFO.
-    levels = [logging.CRITICAL, logging.ERROR, logging.WARN, logging.INFO, logging.DEBUG]
+    # levels = [logging.CRITICAL, logging.ERROR, logging.WARN, logging.INFO, logging.DEBUG]
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(module)s/%(funcName)s - %(message)s')
-    root_level = logging.INFO
     logger = logging.getLogger("PlottingApp")
-    logger.setLevel(root_level)
-    log_handler = RotatingFileHandler('PlottingApp.log', maxBytes=500000, backupCount=2)
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+    log_handler = RotatingFileHandler('PlottingApp.log', maxBytes=5000, backupCount=2)
     log_handler.setFormatter(formatter)
     logger.addHandler(log_handler)
-    logger.info(f"logging level: {root_level}")
+    logger.info(f"logging level: {logger.level}")
 
     appctxt = AppContext()
     sys.exit(appctxt.run())
