@@ -14,7 +14,7 @@ default_options = [['sep', ';', str], ['skiprows', None, int], ['decimal', '.', 
                    ['encoding', None, str]]
 
 
-class PresetModel(QAbstractItemModel):
+class PresetBoxModel(QAbstractItemModel):
 
     def __init__(self, preset_model):
         super(self.__class__, self).__init__(parent=None)
@@ -292,7 +292,7 @@ class ReadCSVModel(QObject):
         self.options_model = OptionTableModel()
         self.columns_model = ColumnTableModel()
         self.preview_model = DataFrameTableModel()
-        self.preset_model = PresetModel(preset_model)
+        self.preset_model = PresetBoxModel(preset_model)
         self.date_format_model = DateFormatModel()
         self._date_format = ''
         self._preview_raw_data = None

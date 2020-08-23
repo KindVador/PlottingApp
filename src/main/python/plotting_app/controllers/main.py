@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from pathlib import Path
 
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QApplication
@@ -26,17 +27,34 @@ class QtMainController(object):
 
     def __init__(self, ctx, version):
         super(self.__class__, self).__init__()
-        logger.info("creation of the main controller")
+        logger.debug(f"QtMainController.__init__({ctx}, {version})")
+        self.ctx = ctx
         self.app = ctx.app
         self.app.setStyle('fusion')
-        self.cfg = ApplicationConfigurationController()
+        self.cfg = None
         self.model = PlotModel()
         self.view = MainWindow(version)
 
     def __call__(self, *args, **kwargs):
-        logger.info("execution of the main controller")
+        logger.debug(f"QtMainController.__call__({args}, {kwargs})")
+        self.load_user_preferences()
         self._init_view()
         self.view.show()
+
+    def load_user_preferences(self, filepath=None):
+        logger.debug(f'QtMainController.load_user_preferences(filepath={filepath})')
+        if self.cfg is None:
+            if filepath:
+                p = Path(filepath)
+                logger.debug(p.name, p.parent)
+                self.cfg = ApplicationConfigurationController(folder=p.parent, file_name=p.name)
+            else:
+                self.cfg = ApplicationConfigurationController(folder=self.ctx.config_dir)
+
+    def save_user_preferences(self, filepath=None):
+        logger.debug(f"QtMainController.save_user_preferences(filepath={filepath})")
+        if self.cfg:
+            self.cfg.save_to_disk(filepath)
 
     def _init_view(self):
         logger.info("initialization of the main view")

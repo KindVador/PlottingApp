@@ -15,12 +15,12 @@ class ApplicationConfigurationController(object):
     """
     Class to handle user's preferences for the whole application.
 
-    User's preferences are saved on the disk in the user directory ('~').
+    User's preferences are saved on the disk in the user folder ('~').
 
     """
 
     def __init__(self, folder, file_name='PlottingApp.cfg'):
-        self.model = ApplicationConfigurationModel()
+        self.model = None
         self.view = ApplicationConfigurationView()
         self.file_name = file_name
         self.folder = folder
@@ -29,29 +29,40 @@ class ApplicationConfigurationController(object):
         if not os.path.exists(self.folder):
             os.makedirs(self.folder)
         # check if the file exists
-        if os.path.exists(self.filepath):
-            self.load_from_disk()
-        else:
+        if not os.path.exists(self.filepath):
             self._create_defaults_user_config()
+        self.load_from_disk(os.path.join(self.folder, self.file_name))
 
     @property
     def filepath(self):
         return os.path.join(self.folder, self.file_name)
 
     def _create_defaults_user_config(self):
+        logger.debug("ApplicationConfigurationController._create_defaults_user_config()")
         main_path = Path(__file__).parent.absolute().parents[1]
         dflt_cfg = main_path.joinpath('data', 'base', 'default.cfg')
-        shutil.copyfile(dflt_cfg, self.filepath)
+        shutil.copyfile(dflt_cfg, os.path.join(self.folder, self.file_name))
 
     def add_model_user_configuration(self, name: str, model: JsonSerializable):
+        logger.debug(f"ApplicationConfigurationController.add_model_user_configuration({name}, {model})")
         self.model.add_model(name, model)
 
-    def load_from_disk(self):
-        with open(os.path.join(self.folder, self.file_name), mode='r') as f:
-            pass
+    def load_from_disk(self, filepath):
+        logger.debug("ApplicationConfigurationController.load_from_disk()")
+        # test if file is empty before reading it
+        if os.path.getsize(filepath) > 0:
+            with open(os.path.join(self.folder, self.file_name), mode='r') as f:
+                self.model = ApplicationConfigurationModel.from_json(json.loads(f.read()))
 
-    def save_to_disk(self):
-        with open(self.filepath, mode='w') as f:
-            f.write(self.model.to_json())
+    def save_to_disk(self, filepath=None):
+        logger.debug(f"ApplicationConfigurationController.save_to_disk({filepath})")
+        if filepath:
+            # Save as
+            with open(filepath, mode='w') as f:
+                f.write(self.model.to_json())
+        else:
+            # Save
+            with open(self.filepath, mode='w') as f:
+                f.write(self.model.to_json())
         # reset flag
         self.model.is_dirty = False
