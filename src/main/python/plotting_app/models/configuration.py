@@ -33,6 +33,12 @@ class PresetModel(JsonSerializable):
     def __len__(self) -> int:
         return len(self._presets)
 
+    def __getitem__(self, item):
+        return self._presets[item]
+
+    def __setitem__(self, key, value):
+        self.add(name=key, dct=value)
+
     def add(self, name: str, dct: dict):
         if name not in self._presets:
             self._presets[name] = dct

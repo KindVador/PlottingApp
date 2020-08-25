@@ -37,6 +37,7 @@ class ReadCSVController(QObject):
         self.view.options_table.setModel(self.model.options_model)
         self.view.preview_table.setModel(self.model.preview_model)
         self.model.date_format_required.connect(self._ask_date_format)
+        self.view.preset_cbox.currentTextChanged.connect(self.load_preset)
 
     def _select_file(self):
         logger.info("SELECT FILE ACTION")
@@ -49,6 +50,13 @@ class ReadCSVController(QObject):
             self.model.csv_path = file_url[0]
         else:
             logger.info("User has canceled file selection")
+
+    def load_preset(self, text):
+        logger.info(f"Loading preset: {text}")
+        self.model.options_model.clear()
+        # populate OptionTableModel with preset values
+        for k, v in self.preset_model[text].items():
+            self.model.options_model.set_option(k, v)
 
     def _save_cfg(self):
         logger.info("SAVE CURRENT CONFIGURATION")

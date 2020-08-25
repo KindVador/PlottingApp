@@ -51,8 +51,13 @@ class ApplicationConfigurationController(object):
         logger.debug("ApplicationConfigurationController.load_from_disk()")
         # test if file is empty before reading it
         if os.path.getsize(filepath) > 0:
-            with open(os.path.join(self.folder, self.file_name), mode='r') as f:
-                self.model = ApplicationConfigurationModel.from_json(json.loads(f.read()))
+            try:
+                with open(os.path.join(self.folder, self.file_name), mode='r') as f:
+                    self.model = ApplicationConfigurationModel.from_json(json.loads(f.read()))
+            except json.decoder.JSONDecodeError as error:
+                self.model = ApplicationConfigurationModel()
+                logger.error("Invalid configuration file.")
+                logger.error(error)
 
     def save_to_disk(self, filepath=None):
         logger.debug(f"ApplicationConfigurationController.save_to_disk({filepath})")

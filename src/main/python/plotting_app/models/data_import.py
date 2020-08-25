@@ -2,16 +2,17 @@
 import io
 import logging
 import typing
+from collections import OrderedDict
 
 import pandas as pd
 from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject, QAbstractItemModel
 
 logger = logging.getLogger("PlottingApp")
 
-default_options = [['sep', ';', str], ['skiprows', None, int], ['decimal', '.', str], ['header', 'infer', str],
-                   ['index_col', None, int], ['na_values', "?", str], ['nrows', None, int],
-                   ['parse_dates', False, bool], ['keep_date_col', False, bool], ['comment', "#", str],
-                   ['encoding', None, str]]
+default_options = {'sep': (';', str), 'skiprows': (None, int), 'decimal': ('.', str), 'header': ('infer', str),
+                   'index_col': (None, int), 'na_values': ("?", str), 'nrows': (None, int),
+                   'parse_dates': (False, bool), 'keep_date_col': (False, bool), 'comment': ("#", str),
+                   'encoding': (None, str)}
 
 
 class PresetBoxModel(QAbstractItemModel):
@@ -46,7 +47,15 @@ class OptionTableModel(QAbstractTableModel):
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
         self.header = {0: "OPTION", 1: "VALUE"}
-        self.options = default_options
+        self.options = None
+        self.indexes = None
+        self.types = None
+        self.__init_attributes()
+
+    def __init_attributes(self):
+        self.options = OrderedDict(sorted({k: v[0] for k, v in default_options.items()}.items()))
+        self.indexes = list(self.options.keys())
+        self.types = {k: v[1] for k, v in default_options.items()}
 
     def rowCount(self, parent: QModelIndex = ..., *args, **kwargs):
         return len(self.options)
@@ -73,7 +82,10 @@ class OptionTableModel(QAbstractTableModel):
 
     def data(self, index: QModelIndex, role: int = ...):
         if role == Qt.DisplayRole:
-            return self.options[index.row()][index.column()]
+            if index.column() == 0:
+                return self.indexes[index.row()]
+            else:
+                return self.options[self.indexes[index.row()]]
         elif role == Qt.FontRole:
             return None
         elif role == Qt.ForegroundRole:
@@ -91,22 +103,48 @@ class OptionTableModel(QAbstractTableModel):
             return False
 
         if role in [Qt.EditRole, Qt.CheckStateRole]:
-            if value == '':
-                return False
-            self.options[index.row()][1] = value
-        self.dataChanged.emit(index, index)
-        self.option_modified.emit()
-        if self.options[index.row()][0] == 'parse_dates':
-            self.date_format_required.emit()
+            self.set_option(self.indexes[index.row()], value)
+            self.dataChanged.emit(index, index)
+            self.option_modified.emit()
+            # When 'parse_dates' option is set to True, we need to emit a signal to ask a GMT format to user
+            if self.indexes[index.row()] == 'parse_dates' and self.options['parse_dates'] is True:
+                self.date_format_required.emit()
+
         return True
 
     def clear(self):
         self.beginResetModel()
-        self.options = default_options
+        self.__init_attributes()
         self.endResetModel()
 
-    def to_dict(self):
-        return {o[0]: o[2](o[1]) for o in self.options if o[1] is not None}
+    def to_dict(self, keep_none_value=True):
+        # return {o[0]: o[2](o[1]) for o in self.options if o[1] is not None}
+        if keep_none_value:
+            return {k: v for k, v in self.options.items()}
+        else:
+            return {k: v for k, v in self.options.items() if v is not None}
+
+    def set_option(self, name, value):
+        # test if option is already defined and add it to indexes if this a new option
+        if name not in self.options.keys():
+            self.indexes.append(name)
+        # update model with new option value
+        self.beginResetModel()
+        if value is None or value == '':
+            self.options[name] = None
+        elif self.types[name] is bool:
+            if str(value).lower() in {'true', 't', '1'}:
+                self.options[name] = True
+            else:
+                self.options[name] = False
+        else:
+            self.options[name] = self.types[name](value)
+        self.endResetModel()
+        # we need to emit a signal to reload with new option value
+        self.option_modified.emit()
+
+    def add_option(self, name, value):
+        self.set_option(name, value)
 
 
 class ColumnTableModel(QAbstractTableModel):
@@ -331,10 +369,11 @@ class ReadCSVModel(QObject):
             pass
 
     def update_preview(self):
-        opts = self.options_model.to_dict()
+        opts = self.options_model.to_dict(keep_none_value=False)
         print(opts)
-        self.preview_model.dataframe = pd.read_csv(io.StringIO(self._preview_raw_data), **opts)
-        # update of columns
-        self.columns_model.clear()
-        for c in self.preview_model.dataframe.columns:
-            self.columns_model.add_column(c, '', c)
+        if self._preview_raw_data:
+            self.preview_model.dataframe = pd.read_csv(io.StringIO(self._preview_raw_data), **opts)
+            # update of columns
+            self.columns_model.clear()
+            for c in self.preview_model.dataframe.columns:
+                self.columns_model.add_column(c, '', c)
