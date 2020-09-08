@@ -8,6 +8,8 @@ from logging.handlers import RotatingFileHandler
 
 from fbs_runtime.application_context.PySide2 import ApplicationContext, cached_property
 
+# if sys.platform == 'win32':
+sys.path.insert(0, str(Path(__file__).parent.absolute().parents[0]))
 from plotting_app.controllers.main import QtMainController
 
 __version__ = '2020.1.0a1'
