@@ -39,7 +39,7 @@ class ApplicationConfigurationController(object):
 
     def _create_defaults_user_config(self):
         logger.debug("ApplicationConfigurationController._create_defaults_user_config()")
-        main_path = Path(__file__).parent.absolute().parents[1]
+        main_path = Path(__file__).parent.absolute().parents[3]
         dflt_cfg = main_path.joinpath('data', 'base', 'default.cfg')
         shutil.copyfile(dflt_cfg, os.path.join(self.folder, self.file_name))
 
