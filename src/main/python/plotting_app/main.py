@@ -53,6 +53,8 @@ if __name__ == '__main__':
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
+    if not os.path.exists(CONFIG_DIR):
+        os.makedirs(CONFIG_DIR)
     log_file = os.path.join(CONFIG_DIR, "PlottingApp.log")
     log_handler = RotatingFileHandler(log_file, maxBytes=5000, backupCount=2)
     log_handler.setFormatter(formatter)
