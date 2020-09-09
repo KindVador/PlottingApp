@@ -61,7 +61,7 @@ class ReadCSVController(QObject):
     def _save_cfg(self):
         logger.info("SAVE CURRENT CONFIGURATION")
         # ask user the name of the configuration
-        cfg_name, res = QInputDialog.getText(self.view, "Please filk t name", "Configuration's name", QLineEdit.Normal, QDir.home().dirName())
+        cfg_name, res = QInputDialog.getText(self.view, "Please fill the name", "Configuration's name", QLineEdit.Normal, QDir.home().dirName())
         if res and len(cfg_name) > 0:
             # save current configuration to the user configuration object
             cfg_dict = {'name': cfg_name, 'options': self.model.options_model.to_dict()}
