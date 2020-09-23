@@ -8,7 +8,7 @@ from logging.handlers import RotatingFileHandler
 
 from PySide2.QtWidgets import QApplication
 
-from plotting_app.controllers.main import QtMainController
+from main.controller import QtMainController
 
 CONFIG_DIR = os.path.join(str(Path.home()), ".plotting_app")
 __version__ = '2020.1.0a1'

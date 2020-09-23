@@ -5,10 +5,10 @@ from pathlib import Path
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QApplication
 
-from plotting_app.views.main import MainWindow
-from plotting_app.models.main import PlotModel
-from plotting_app.controllers.data_import import ReadCSVController
-from plotting_app.controllers.configuration import ApplicationConfigurationController
+from .view import MainWindow
+from .model import PlotModel
+from data_import.controller import ReadCSVController
+from configuration.controller import ApplicationConfigurationController
 
 logger = logging.getLogger("PlottingApp")
 

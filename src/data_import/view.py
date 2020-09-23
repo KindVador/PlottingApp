@@ -4,8 +4,8 @@ import logging
 from PySide2.QtWidgets import QDialog
 from PySide2.QtCore import Qt, Signal
 
-from plotting_app.views.ui.ui_csv_config_widget import Ui_CSVConfigDialog
-from plotting_app.views.ui.ui_date_format_dialog import Ui_DateFormatDialog
+from .ui_csv_config_widget import Ui_CSVConfigDialog
+from .ui_date_format_dialog import Ui_DateFormatDialog
 
 logger = logging.getLogger("PlottingApp")
 

@@ -5,8 +5,8 @@ import shutil
 import logging
 import json
 
-from plotting_app.models.configuration import ApplicationConfigurationModel, JsonSerializable
-from plotting_app.views.configuration import ApplicationConfigurationView
+from .model import ApplicationConfigurationModel, JsonSerializable
+from .view import ApplicationConfigurationView
 
 logger = logging.getLogger("PlottingApp")
 
