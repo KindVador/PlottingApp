@@ -6,3 +6,4 @@ venv/
 
 test_data/
 target/
+docs/build
