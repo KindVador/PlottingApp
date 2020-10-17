@@ -2,7 +2,6 @@
 import os
 import logging
 
-import pandas as pd
 from PySide2.QtWidgets import QFileDialog, QInputDialog, QLineEdit
 from PySide2.QtCore import Slot, QDir, Signal, QObject
 
@@ -75,7 +74,7 @@ class ReadCSVController(QObject):
 
     def get_data_with_dialog(self):
         if self.view.exec_():
-            return pd.read_csv(self.model.csv_path, **self.model.options_model.to_dict())
+            return self.model.get_dataframe()
         else:
             return None
 

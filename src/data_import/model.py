@@ -148,11 +148,21 @@ class OptionTableModel(QAbstractTableModel):
 
 
 class ColumnTableModel(QAbstractTableModel):
+    column_modified = Signal()
 
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
         self.header = {0: "CSV COLUMN", 1: "TYPE", 2: "NEW NAME"}
         self.columns = []
+        self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'str']
+
+    @property
+    def renaming_dict(self):
+        return {c[0]: c[2] for c in self.columns if c[2] is not None}
+
+    @property
+    def types_dict(self):
+        return {c[0]: c[1] for c in self.columns if c[1] is not None}
 
     def rowCount(self, parent: QModelIndex = ..., *args, **kwargs):
         return len(self.columns)
@@ -168,6 +178,12 @@ class ColumnTableModel(QAbstractTableModel):
                 return None
         else:
             return None
+
+    def flags(self, index):
+        flags = super(self.__class__, self).flags(index)
+        if index.column() > 0:
+            flags |= Qt.ItemIsEditable
+        return flags
 
     def data(self, index: QModelIndex, role: int = ...):
         if role == Qt.DisplayRole:
@@ -194,15 +210,41 @@ class ColumnTableModel(QAbstractTableModel):
         self.columns.append([csv_name, data_type, new_name])
         self.endInsertRows()
 
-    def to_dict(self):
-        return {c[0]: (c[2], c[1]) for c in self.columns if c[1] is not None}
+    def to_dict(self) -> dict:
+        """
+        Returns a dict containing only columns to be renamed.
+
+        Returns:
+            dict
+        """
+        return {c[0]: (c[2], c[1]) for c in self.columns if c[2] is not None}
+
+    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
+        if not index.isValid():
+            return False
+
+        if role in [Qt.EditRole, Qt.CheckStateRole]:
+            self.columns[index.row()][index.column()] = value
+            self.dataChanged.emit(index, index)
+            self.column_modified.emit()
+
+        return True
 
 
 class DataFrameTableModel(QAbstractTableModel):
+    """
+    Model for the preview of a DataFrame in a table.
+
+    Attributes:
+        dataframe (pd.DataFrame):
+        columns_dict (dict):
+
+    """
 
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
         self._df = None
+        self.columns_dict = None
 
     @property
     def dataframe(self):
@@ -233,10 +275,6 @@ class DataFrameTableModel(QAbstractTableModel):
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
             return self.dataframe.columns[section]
-            # if section in self.header.keys():
-            #     return self.header[section]
-            # else:
-            #     return None
         else:
             return None
 
@@ -368,12 +406,33 @@ class ReadCSVModel(QObject):
             # TODO log an error or throw an exception
             pass
 
+    @staticmethod
+    def _create_dataframe(data, options_dict, renaming_dict=None):
+        # read file using pandas function
+        df = pd.read_csv(data, **options_dict)
+
+        # sometimes the last column is empty due to a leading sep at the end of each line.
+        if 'Unnamed' in df.columns[-1]:
+            df.drop(df.columns[-1], axis=1, inplace=True)
+
+        # df.set_index('GMT', inplace=True, drop=True, append=False)
+        # df.index = pd.to_datetime(df.index, format=gmt_format)
+        if renaming_dict and len(renaming_dict) > 0:
+            print(renaming_dict)
+            df.rename(columns=renaming_dict, inplace=True)
+        return df
+
     def update_preview(self):
         opts = self.options_model.to_dict(keep_none_value=False)
         print(opts)
         if self._preview_raw_data:
-            self.preview_model.dataframe = pd.read_csv(io.StringIO(self._preview_raw_data), **opts)
+            rn = self.columns_model.renaming_dict
+            self.preview_model.dataframe = self._create_dataframe(io.StringIO(self._preview_raw_data), opts, rn)
             # update of columns
+            # TODO to be improve as column modifications should be kept when an option is modified
             self.columns_model.clear()
             for c in self.preview_model.dataframe.columns:
-                self.columns_model.add_column(c, '', c)
+                self.columns_model.add_column(c, 'float64', None)
+
+    def get_dataframe(self):
+        return self._create_dataframe(self.csv_path, self.options_model.to_dict(), self.columns_model.renaming_dict)
