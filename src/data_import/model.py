@@ -220,7 +220,7 @@ class ColumnTableModel(QAbstractTableModel):
         return {c[0]: (c[2], c[1]) for c in self.columns if c[2] is not None}
 
     def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
-        if not index.isValid():
+        if not index.isValid() or len(str(value).strip()) == 0:
             return False
 
         if role in [Qt.EditRole, Qt.CheckStateRole]:
@@ -236,15 +236,13 @@ class DataFrameTableModel(QAbstractTableModel):
     Model for the preview of a DataFrame in a table.
 
     Attributes:
-        dataframe (pd.DataFrame):
-        columns_dict (dict):
+        dataframe (pandas.DataFrame):
 
     """
 
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
         self._df = None
-        self.columns_dict = None
 
     @property
     def dataframe(self):
@@ -375,6 +373,7 @@ class ReadCSVModel(QObject):
         # connect
         self.options_model.option_modified.connect(self.update_preview)
         self.options_model.date_format_required.connect(self.date_format_required.emit)
+        self.columns_model.column_modified.connect(self.update_preview)
 
         # populate model with DateFormat
         # TODO load items from user config file
@@ -418,7 +417,6 @@ class ReadCSVModel(QObject):
         # df.set_index('GMT', inplace=True, drop=True, append=False)
         # df.index = pd.to_datetime(df.index, format=gmt_format)
         if renaming_dict and len(renaming_dict) > 0:
-            print(renaming_dict)
             df.rename(columns=renaming_dict, inplace=True)
         return df
 
@@ -430,9 +428,10 @@ class ReadCSVModel(QObject):
             self.preview_model.dataframe = self._create_dataframe(io.StringIO(self._preview_raw_data), opts, rn)
             # update of columns
             # TODO to be improve as column modifications should be kept when an option is modified
-            self.columns_model.clear()
-            for c in self.preview_model.dataframe.columns:
-                self.columns_model.add_column(c, 'float64', None)
+            if len(rn) == 0:
+                self.columns_model.clear()
+                for c in self.preview_model.dataframe.columns:
+                    self.columns_model.add_column(c, 'float64', None)
 
     def get_dataframe(self):
         return self._create_dataframe(self.csv_path, self.options_model.to_dict(), self.columns_model.renaming_dict)
