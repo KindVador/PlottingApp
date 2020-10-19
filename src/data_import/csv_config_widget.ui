@@ -74,6 +74,16 @@
        </property>
       </spacer>
      </item>
+     <item>
+      <widget class="QLabel" name="index_label">
+       <property name="text">
+        <string>Index:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="index_cbx"/>
+     </item>
     </layout>
    </item>
    <item>

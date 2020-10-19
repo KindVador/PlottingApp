@@ -62,8 +62,18 @@ class QtMainController(object):
 
     def _make_view_connections(self):
         logger.info("creation of connections between the main controller and the main view")
-        self.view.actionQuit.triggered.connect(self.quit)
+        # menu: File
         self.view.actionOpen.triggered.connect(self._open)
+        self.view.actionSave.triggered.connect(self._save)
+        self.view.actionClose.triggered.connect(self._close)
+        self.view.actionQuit.triggered.connect(self.quit)
+        # menu: Data
+        self.view.actionCSV.triggered.connect(self.import_data)
+        self.view.actionExport.triggered.connect(self.export_data)
+        self.view.actionShow_in_table.triggered.connect(self.show_data_table)
+        # menu: Help
+        self.view.actionAbout.triggered.connect(self.show_about)
+        # main window
         self.view.parameters_btn.clicked.connect(self.view.show_hide_variables_panel)
         self.view.add_btn.clicked.connect(self._add_clicked)
         self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
@@ -71,19 +81,37 @@ class QtMainController(object):
         self.view.remove_cbx.activated.connect(self.remove_subplot)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
 
+    def _open(self):
+        logger.info("OPEN ACTION")
+
+    def _save(self):
+        logger.info("SAVE ACTION")
+
+    def _close(self):
+        logger.info("CLOSE ACTION")
+
     def quit(self):
         logger.info("QUIT ACTION")
         self.app.closeAllWindows()
         self.app.exit(0)
 
-    def _open(self):
-        logger.info("OPEN ACTION")
+    def import_data(self):
+        logger.info("IMPORT DATA ACTION")
         dic = ReadCSVController(preset_model=self.cfg.model['csv_presets'])
         dic.config_updated.connect(self.cfg.save_to_disk)
         self.model.dataframe = dic.get_data_with_dialog()
         # updates tree items
         self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)
         self.view.parameters_tree_widget.resizeColumnToContents(0)
+
+    def export_data(self):
+        logger.info("EXPORT DATA ACTION")
+
+    def show_data_table(self):
+        logger.info("SHOW DATA TABLE ACTION")
+
+    def show_about(self):
+        logger.info("SHOW ABOUT ACTION")
 
     def _add_clicked(self):
         d = {}
@@ -99,6 +127,7 @@ class QtMainController(object):
             else:
                 d[si.data(0, Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
+        logger.debug(f"add parameter {d}")
         print(d)
         self.add_subplot(d)
 

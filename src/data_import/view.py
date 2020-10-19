@@ -25,7 +25,6 @@ class DateFormatDialog(QDialog, Ui_DateFormatDialog):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("Select Date format")
-        # self.table_view.setSelectionMode(QAbstractItemView.SingleSelection) -> set in ui file.
         if model:
             self.table_view.setModel(model)
         self.accepted.connect(self._submit_and_close)

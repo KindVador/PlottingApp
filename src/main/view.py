@@ -18,6 +18,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def setup_ui(self):
         self.setupUi(self)
         self.setWindowTitle(f"PlottingApp v{self.version}")
+        # set default value for actions
+        self.actionClose.setEnabled(False)
+        self.actionSave.setEnabled(False)
+        self.actionExport.setEnabled(False)
+        self.actionShow_in_table.setEnabled(False)
         # update widgets
         self.parameters_tree_widget.setHeaderLabels(['Variable Name'])
         self.parameters_tree_widget.setColumnCount(1)
@@ -34,6 +39,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def show_hide_variables_panel(self):
         self.parameters_tree_widget.setVisible(not self.parameters_tree_widget.isVisible())
+        self.search_field.setVisible(not self.search_field.isVisible())
+        if self.parameters_btn.text() == 'hide':
+            self.parameters_btn.setText('show')
+        else:
+            self.parameters_btn.setText('hide')
 
     def get_filter_extension(self):
         # TODO to be modified for contextual menu feature

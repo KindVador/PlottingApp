@@ -31,13 +31,16 @@
      <number>0</number>
     </property>
     <item>
-     <layout class="QVBoxLayout" name="variables_layout" stretch="0">
+     <layout class="QVBoxLayout" name="variables_layout" stretch="0,0">
       <property name="spacing">
        <number>5</number>
       </property>
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
+      <item>
+       <widget class="QLineEdit" name="search_field"/>
+      </item>
       <item>
        <widget class="QTreeWidget" name="parameters_tree_widget">
         <property name="sizeAdjustPolicy">
@@ -103,7 +106,7 @@
        <item>
         <widget class="QPushButton" name="parameters_btn">
          <property name="text">
-          <string>&lt;&gt;</string>
+          <string>hide</string>
          </property>
         </widget>
        </item>
@@ -294,7 +297,7 @@
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -302,6 +305,8 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionClose"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -310,7 +315,22 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuData">
+    <property name="title">
+     <string>Data</string>
+    </property>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="actionCSV"/>
+    </widget>
+    <addaction name="menuImport"/>
+    <addaction name="actionExport"/>
+    <addaction name="actionShow_in_table"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuData"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -327,6 +347,31 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>Export</string>
+   </property>
+  </action>
+  <action name="actionCSV">
+   <property name="text">
+    <string>CSV</string>
+   </property>
+  </action>
+  <action name="actionShow_in_table">
+   <property name="text">
+    <string>Show in table</string>
    </property>
   </action>
  </widget>
