@@ -154,7 +154,7 @@ class ColumnTableModel(QAbstractTableModel):
         super(self.__class__, self).__init__(parent=None)
         self.header = {0: "CSV COLUMN", 1: "TYPE", 2: "NEW NAME"}
         self.columns = []
-        self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'str']
+        self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'object', 'str']
 
     @property
     def renaming_dict(self):
@@ -162,7 +162,20 @@ class ColumnTableModel(QAbstractTableModel):
 
     @property
     def types_dict(self):
-        return {c[0]: c[1] for c in self.columns if c[1] is not None}
+        return {c[0]: self.__adapt_type(c[1]) for c in self.columns if c[1] is not None}
+
+    @staticmethod
+    def __adapt_type(value: str) -> str:
+        if value.lower() in ['str', 'string']:
+            return 'object'
+        elif value.lower() in ['bool', 'boolean', 'bit']:
+            return 'Int8'
+        elif value.lower() == 'int64':
+            return 'Int64'
+        elif value.lower() == 'int32':
+            return 'Int32'
+        else:
+            return value
 
     def rowCount(self, parent: QModelIndex = ..., *args, **kwargs):
         return len(self.columns)
@@ -220,14 +233,19 @@ class ColumnTableModel(QAbstractTableModel):
         return {c[0]: (c[2], c[1]) for c in self.columns if c[2] is not None}
 
     def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
-        if not index.isValid() or len(str(value).strip()) == 0:
+        print(f"ColumnTableModel.setData({index}, {value}, {role})")
+        if not index.isValid():
+            logger.error("Invalid index sent to ColumnTableModel.setData method")
             return False
-
+        # case of an empty column name
+        if index.column() == 2 and len(str(value).strip()) == 0:
+            logger.error("Empty column name sent to ColumnTableModel.setData method")
+            return False
+        # case of a new value
         if role in [Qt.EditRole, Qt.CheckStateRole]:
             self.columns[index.row()][index.column()] = value
             self.dataChanged.emit(index, index)
             self.column_modified.emit()
-
         return True
 
 
@@ -236,7 +254,7 @@ class DataFrameTableModel(QAbstractTableModel):
     Model for the preview of a DataFrame in a table.
 
     Attributes:
-        dataframe (pandas.DataFrame):
+        dataframe (pd.DataFrame): pandas DataFrame to be visualized.
 
     """
 
@@ -425,13 +443,18 @@ class ReadCSVModel(QObject):
         print(opts)
         if self._preview_raw_data:
             rn = self.columns_model.renaming_dict
+            # add dtype option in opts dict
+            opts['dtype'] = self.columns_model.types_dict
             self.preview_model.dataframe = self._create_dataframe(io.StringIO(self._preview_raw_data), opts, rn)
             # update of columns
             # TODO to be improve as column modifications should be kept when an option is modified
             if len(rn) == 0:
                 self.columns_model.clear()
                 for c in self.preview_model.dataframe.columns:
-                    self.columns_model.add_column(c, 'float64', None)
+                    self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), None)
 
     def get_dataframe(self):
-        return self._create_dataframe(self.csv_path, self.options_model.to_dict(), self.columns_model.renaming_dict)
+        opts = self.options_model.to_dict()
+        # add dtype option in opts dict
+        opts['dtype'] = self.columns_model.types_dict
+        return self._create_dataframe(self.csv_path, opts, self.columns_model.renaming_dict)

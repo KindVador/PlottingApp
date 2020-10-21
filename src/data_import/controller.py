@@ -14,6 +14,7 @@ logger = logging.getLogger("PlottingApp")
 class ReadCSVController(QObject):
 
     config_updated = Signal()
+    # preview_refreshed = Signal()
 
     def __init__(self, preset_model):
         super(self.__class__, self).__init__()
@@ -25,6 +26,8 @@ class ReadCSVController(QObject):
     def _init_view(self):
         logger.info("initialization of the main view")
         self._make_view_connections()
+        # init ComboBox values for type columns
+        self.view.set_types_values(self.model.columns_model.allowed_types)
         # connect widgets to models
         self.view.preset_cbox.setModel(self.model.preset_model)
 
