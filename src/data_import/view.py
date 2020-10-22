@@ -57,6 +57,9 @@ class ReadCSVDialog(QDialog, Ui_CSVConfigDialog):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.options_table.setAlternatingRowColors(True)
+        self.columns_table.setAlternatingRowColors(True)
+        self.preview_table.setAlternatingRowColors(True)
 
     def set_types_values(self, values, column_position=1):
         self.columns_table.setItemDelegateForColumn(column_position, ComboBoxDelegate(self, values))
