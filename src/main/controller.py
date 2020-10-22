@@ -116,7 +116,6 @@ class QtMainController(object):
     def _add_clicked(self):
         d = {}
         for si in self.view.parameters_tree_widget.selectedItems():
-            print(si)
             if si.parent():
                 if si.parent().data(0, Qt.DisplayRole) in d:
                     d[si.parent().data(0, Qt.DisplayRole)] += [si.data(0, Qt.DisplayRole)]
@@ -128,7 +127,6 @@ class QtMainController(object):
                 d[si.data(0, Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
         logger.debug(f"add parameter {d}")
-        print(d)
         self.add_subplot(d)
 
     def _double_clicked(self, item, column):

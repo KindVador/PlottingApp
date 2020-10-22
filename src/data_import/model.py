@@ -440,7 +440,6 @@ class ReadCSVModel(QObject):
 
     def update_preview(self):
         opts = self.options_model.to_dict(keep_none_value=False)
-        print(opts)
         if self._preview_raw_data:
             rn = self.columns_model.renaming_dict
             # add dtype option in opts dict
