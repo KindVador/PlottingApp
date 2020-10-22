@@ -58,7 +58,7 @@ class MatplotlibCanvas(Canvas):
                 short_label = False
             for k, v in configs[ax_nb].items():
                 lbl = v['short_label'] if short_label else v['label']
-                ax.plot(v['x_data'], v['y_data'], label=lbl, drawstyle=v['drawstyle'], marker=v['marker'], linestyle=v['linestyle'])
+                ax.plot(v['x_data'].to_numpy(), v['y_data'].to_numpy(), label=lbl, drawstyle=v['drawstyle'], marker=v['marker'], linestyle=v['linestyle'])
             ax.legend(loc='best', ncol=2, fontsize='small')
             mplcursors.cursor(ax.lines)
         axes[-1].set_xlabel('Time')
@@ -89,3 +89,24 @@ class MatplotlibWidget(QWidget):
 
     def update_all_plots(self, configs):
         self.canvas.update_all_plots(configs)
+
+
+# def plot(df, config, figsize=(25, 20), name="plot"):
+#     fig, ax = plt.subplots(nrows=len(config), ncols=1, sharex=True, sharey=False, figsize=figsize)
+#     for i, p in enumerate(config):
+#         ax[i].plot(df[p], label=p, drawstyle='steps-post')
+#         ax[i].set_ylabel(p)
+#         #         ax[i].set_ylim([-0.1, 1.1])
+#         ax[i].legend()
+#         ax[i].grid(which='major', linestyle='-')
+#         ax[i].grid(which='minor', linestyle='--')
+#     ax[-1].set_xlabel('UTC')
+#     # format the ticks for GMT axis
+#     ax[-1].xaxis.set_major_locator(gmt_minute_locator)
+#     ax[-1].xaxis.set_major_formatter(gmt_axis_fmt)
+#     ax[-1].xaxis.set_minor_locator(gmt_second_locator)
+#     # format the coords message box
+#     #     ax[-1].format_xdata = mdates.DateFormatter('%Y-%m-%d')
+#     fig.autofmt_xdate()
+#     plt.savefig(f"{name}.png")
+#     plt.show()
