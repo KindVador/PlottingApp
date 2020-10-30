@@ -48,7 +48,6 @@ class AppContext(object):
         except Exception:
             # sys._MEIPASS is not defined, so use the original path
             base_path = Path(__file__).parents[1]
-        print('base_path = ', base_path)
         return base_path.joinpath('resources')
 
     def start_log(self, debug=False):
