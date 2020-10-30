@@ -1,10 +1,11 @@
 *.DS_Store
 *.pyc
-PlottingApp.log
+*.log
 .idea/
 venv/
-
+build/
 test_data/
 target/
 docs/build
-/PlottingApp.spec
+dist/
+*.spec

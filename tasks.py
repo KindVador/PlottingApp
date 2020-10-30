@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import sys
+from pathlib import Path
+
 from invoke import task
 
 
@@ -21,3 +24,21 @@ def build(c, docs=False):
     if docs:
         c.run("sphinx-build docs docs/_build")
 
+
+@task
+def freeze(c):
+    app_name = r'PlottingApp'
+    icon_path = rf'{Path(__file__).parent.joinpath("resources/icons/PlottingApp.ico")}'
+
+    if sys.platform in ('win32', 'cygwin'):
+        options = r'--onefile --windowed --noconfirm --clean'
+        resources_path = rf'--add-data {Path(__file__).parent.joinpath("resources")};resources'
+        script_path = r'src\launch.py'
+    elif sys.platform in ('darwin', 'linux'):
+        options = r'--onefile --windowed --noconfirm --clean'
+        resources_path = rf'--add-data {Path(__file__).parent.joinpath("resources")}:resources'
+        script_path = r'src/launch.py'
+    else:
+        raise EnvironmentError('Unknown operating system.')
+
+    c.run(rf'pyinstaller {options} -i{icon_path} -n{app_name} {resources_path} {script_path}')

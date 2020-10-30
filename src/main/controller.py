@@ -2,8 +2,9 @@
 import logging
 from pathlib import Path
 
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QSize
 from PySide2.QtWidgets import QApplication
+from PySide2.QtGui import QIcon
 
 from .view import MainWindow
 from .model import PlotModel
@@ -27,7 +28,7 @@ class QtMainController(object):
 
     def __init__(self, ctx, version):
         super(self.__class__, self).__init__()
-        logger.debug(f"QtMainController.__init__({ctx}, {version})")
+        logger.info(f"QtMainController.__init__({ctx}, {version})")
         self.ctx = ctx
         self.app = ctx.app
         self.app.setStyle('fusion')
@@ -58,6 +59,15 @@ class QtMainController(object):
 
     def _init_view(self):
         logger.info("initialization of the main view")
+        # set Application icon
+        app_icon = QIcon()
+        resources_path = self.ctx.resource_dir
+        for size in [16, 24, 32, 64, 128, 256, 512]:
+            logger.info(str(resources_path.joinpath(f'icons/base/{str(size)}.png')))
+            if not resources_path.joinpath(f'icons/base/{str(size)}.png').exists():
+                logger.error(f"ICON FILE NOT FOUND : {str(resources_path.joinpath(f'icons/base/{str(size)}.png'))}")
+            app_icon.addFile(str(resources_path.joinpath(f'icons/base/{str(size)}.png')), QSize(size, size))
+        self.view.setWindowIcon(app_icon)
         self._make_view_connections()
 
     def _make_view_connections(self):

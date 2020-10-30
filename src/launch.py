@@ -33,7 +33,24 @@ class AppContext(object):
     @property
     def config_dir(self):
         return CONFIG_DIR
-    
+
+    @property
+    def resource_dir(self):
+        """
+
+        Returns:
+
+        """
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS, and places our data files in a folder
+            # relative to that temp folder named as specified in the datas tuple in the spec file
+            base_path = Path(sys._MEIPASS)
+        except Exception:
+            # sys._MEIPASS is not defined, so use the original path
+            base_path = Path(__file__).parents[1]
+        print('base_path = ', base_path)
+        return base_path.joinpath('resources')
+
     def start_log(self, debug=False):
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(module)s/%(funcName)s - %(message)s')
         self._logger = logging.getLogger("PlottingApp")
