@@ -31,7 +31,7 @@ def freeze(c):
     icon_path = rf'{Path(__file__).parent.joinpath("resources/icons/PlottingApp.ico")}'
 
     if sys.platform in ('win32', 'cygwin'):
-        options = r'--onefile --windowed --noconfirm --clean'
+        options = r'--windowed --noconfirm --clean'
         resources_path = rf'--add-data {Path(__file__).parent.joinpath("resources")};resources'
         script_path = r'src\launch.py'
     elif sys.platform in ('darwin', 'linux'):
@@ -42,3 +42,15 @@ def freeze(c):
         raise EnvironmentError('Unknown operating system.')
 
     c.run(rf'pyinstaller {options} -i{icon_path} -n{app_name} {resources_path} {script_path}')
+
+
+@task(pre=[freeze])
+def installer(c):
+    if sys.platform in ('win32', 'cygwin'):
+        # c.run(f"makensis /V4 /DVERSION={__version__} windows.nsi")
+        c.run("cd resources/installer")
+        c.run("makensis /V4 windows.nsi")
+    elif sys.platform in ('darwin', 'linux'):
+        pass
+    else:
+        raise EnvironmentError('Unknown operating system.')
