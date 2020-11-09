@@ -28,7 +28,7 @@ class QtMainController(object):
 
     def __init__(self, ctx, version):
         super(self.__class__, self).__init__()
-        logger.info(f"QtMainController.__init__({ctx}, {version})")
+        logger.debug(f"QtMainController.__init__({ctx}, {version})")
         self.ctx = ctx
         self.app = ctx.app
         self.app.setStyle('fusion')
@@ -126,6 +126,7 @@ class QtMainController(object):
         logger.info("SHOW ABOUT ACTION")
 
     def show_log(self):
+        logger.info("SHOW LOG ACTION")
         if not self.log_view:
             self.log_view = LogFileWindow()
         self.log_view.show_log_content(self.ctx.log_file)
@@ -143,7 +144,7 @@ class QtMainController(object):
             else:
                 d[si.data(0, Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
-        logger.debug(f"add parameter {d}")
+        logger.info(f"add parameter {d}")
         self.add_subplot(d)
 
     def _double_clicked(self, item, column):
@@ -174,10 +175,12 @@ class QtMainController(object):
         self.view.update_plots(self.model.plots)
 
     def _clear_all_plots(self):
+        logger.info('Clearing all plots')
         self.model.clear_plots_only()
         self.view.clear_all_plots()
 
     def remove_subplot(self, index):
+        logger.info('')
         if index == -1:
             return
         elif index == 0 and len(self.model.plots) == 1:

@@ -233,7 +233,7 @@ class ColumnTableModel(QAbstractTableModel):
         return {c[0]: (c[2], c[1]) for c in self.columns if c[2] is not None}
 
     def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
-        print(f"ColumnTableModel.setData({index}, {value}, {role})")
+        logger.debug(f"ColumnTableModel.setData({index}, {value}, {role})")
         if not index.isValid():
             logger.error("Invalid index sent to ColumnTableModel.setData method")
             return False
@@ -318,7 +318,7 @@ class DateFormatModel(QAbstractItemModel):
         self.is_dirty = False
 
     def add_item(self, item_tuple=("", "")):
-        print("DateFormatModel.add_item(", item_tuple, ")")
+        logger.debug(f"DateFormatModel.add_item({item_tuple})")
         if isinstance(item_tuple, tuple):
             self.beginInsertRows(QModelIndex(), len(self._items), len(self._items))
             self._items.append(item_tuple)
@@ -329,7 +329,7 @@ class DateFormatModel(QAbstractItemModel):
             return
 
     def remove_item(self, index):
-        print("DateFormatModel.remove_item(", index, ")")
+        logger.debug("DateFormatModel.remove_item(", index, ")")
         self.is_dirty = True
 
     def headerData(self, section, orientation, role=None):
@@ -425,6 +425,7 @@ class ReadCSVModel(QObject):
 
     @staticmethod
     def _create_dataframe(data, options_dict, renaming_dict=None):
+        logger.debug('\n'.join([f'\t\t{k} : {v}' for k, v in options_dict.items()]))
         # read file using pandas function
         df = pd.read_csv(data, **options_dict)
 
@@ -453,6 +454,7 @@ class ReadCSVModel(QObject):
                     self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), None)
 
     def get_dataframe(self):
+        logger.info('requiring DataFrame object to model')
         opts = self.options_model.to_dict()
         # add dtype option in opts dict
         opts['dtype'] = self.columns_model.types_dict

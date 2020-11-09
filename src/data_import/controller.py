@@ -81,11 +81,12 @@ class ReadCSVController(QObject):
             return None
 
     def set_date_format(self, date_format):
-        print("ReadCSVController.set_date_format(", date_format, ")")
+        logger.debug("ReadCSVController.set_date_format(", date_format, ")")
         self.model._date_format = date_format
 
     @Slot(name="ask_date_format")
     def _ask_date_format(self):
+        logger.info("Ask user to select a date format")
         dlg = DateFormatDialog(self.model.date_format_model)
         dlg.selected_date_format.connect(self.set_date_format)
         dlg.exec_()
