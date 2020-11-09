@@ -297,7 +297,7 @@
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -314,6 +314,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionShow_log"/>
    </widget>
    <widget class="QMenu" name="menuData">
     <property name="title">
@@ -374,12 +375,17 @@
     <string>Show in table</string>
    </property>
   </action>
+  <action name="actionShow_log">
+   <property name="text">
+    <string>Show log</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>MatplotlibWidget</class>
    <extends>QWidget</extends>
-   <header>views/widgets.h</header>
+   <header>widgets.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -6,7 +6,7 @@ from PySide2.QtCore import Qt, QSize
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
 
-from .view import MainWindow
+from .view import MainWindow, LogFileWindow
 from .model import PlotModel
 from data_import.controller import ReadCSVController
 from configuration.controller import ApplicationConfigurationController
@@ -35,6 +35,7 @@ class QtMainController(object):
         self.cfg = None
         self.model = PlotModel()
         self.view = MainWindow(version)
+        self.log_view = None
 
     def __call__(self, *args, **kwargs):
         logger.debug(f"QtMainController.__call__({args}, {kwargs})")
@@ -83,6 +84,7 @@ class QtMainController(object):
         self.view.actionShow_in_table.triggered.connect(self.show_data_table)
         # menu: Help
         self.view.actionAbout.triggered.connect(self.show_about)
+        self.view.actionShow_log.triggered.connect(self.show_log)
         # main window
         self.view.parameters_btn.clicked.connect(self.view.show_hide_variables_panel)
         self.view.add_btn.clicked.connect(self._add_clicked)
@@ -122,6 +124,11 @@ class QtMainController(object):
 
     def show_about(self):
         logger.info("SHOW ABOUT ACTION")
+
+    def show_log(self):
+        if not self.log_view:
+            self.log_view = LogFileWindow()
+        self.log_view.show_log_content(self.ctx.log_file)
 
     def _add_clicked(self):
         d = {}

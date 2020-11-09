@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from PySide2.QtCore import Qt, Signal
-from PySide2.QtWidgets import QMainWindow, QPushButton
+from PySide2.QtWidgets import QMainWindow, QPushButton, QDialog
 
 from .ui_main_window import Ui_MainWindow
+from .ui_log_dialog import Ui_LogDialog
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -107,3 +108,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_drawstyle(self):
         return self.draw_style_cbx.currentText()
+
+
+class LogFileWindow(QDialog, Ui_LogDialog):
+
+    def __init__(self, parent=None):
+        super(self.__class__, self).__init__(parent)
+        self.setupUi(self)
+        self.ok_btn.clicked.connect(self.close_action)
+
+    def close_action(self):
+        self.log_text_edit.clear()
+        self.close()
+
+    def show_log_content(self, filepath):
+        self.log_file_value.setText(filepath)
+        self.log_text_edit.clear()
+        with open(filepath, mode='r') as log_content:
+            self.log_text_edit.appendPlainText(''.join(log_content.readlines()))
+        self.show()

@@ -22,6 +22,7 @@ class AppContext(object):
         self.version = __version__
         self.app = QApplication([])
         self.app.setStyle('fusion')
+        self._log_file = None
         self._logger = None
         self.mc = QtMainController(self, self.version)
 
@@ -59,8 +60,8 @@ class AppContext(object):
             self._logger.setLevel(logging.INFO)
         if not os.path.exists(CONFIG_DIR):
             os.makedirs(CONFIG_DIR)
-        log_file = os.path.join(CONFIG_DIR, "PlottingApp.log")
-        log_handler = RotatingFileHandler(log_file, maxBytes=5000, backupCount=2)
+        self.log_file = os.path.join(CONFIG_DIR, "PlottingApp.log")
+        log_handler = RotatingFileHandler(self.log_file, maxBytes=5000, backupCount=2)
         log_handler.setFormatter(formatter)
         self._logger.addHandler(log_handler)
         self._logger.info(f"logging level: {self._logger.level}")
@@ -70,6 +71,17 @@ class AppContext(object):
         if self._logger is None:
             self.start_log(False)
         return self._logger
+
+    @property
+    def log_file(self):
+        return self._log_file
+
+    @log_file.setter
+    def log_file(self, filepath):
+        if os.path.exists(filepath):
+            self._log_file = filepath
+        else:
+            self._log_file = os.path.join(CONFIG_DIR, "PlottingApp.log")
 
 
 if __name__ == '__main__':
