@@ -426,8 +426,19 @@ class ReadCSVModel(QObject):
     @staticmethod
     def _create_dataframe(data, options_dict, renaming_dict=None):
         logger.debug('\n'.join([f'\t\t{k} : {v}' for k, v in options_dict.items()]))
+
+        # drop dtypes from options_dict
+        if 'dtype' in options_dict.keys():
+            dtype_dict = options_dict.pop('dtype')
+        else:
+            dtype_dict = None
+
         # read file using pandas function
         df = pd.read_csv(data, **options_dict)
+
+        if dtype_dict:
+            # TODO adapt columns type using dtype_dict
+            pass
 
         # sometimes the last column is empty due to a leading sep at the end of each line.
         if 'Unnamed' in df.columns[-1]:
