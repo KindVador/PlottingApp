@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from PySide2.QtCore import Qt, Signal
-from PySide2.QtWidgets import QMainWindow, QPushButton, QDialog
+from PySide2.QtWidgets import QMainWindow, QPushButton, QDialog, QAbstractScrollArea
+from PySide2.QtGui import QResizeEvent
 
 from .ui_main_window import Ui_MainWindow
 from .ui_log_dialog import Ui_LogDialog
@@ -13,6 +14,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, version):
         super(self.__class__, self).__init__()
         self.version = version
+        self.splitter_sizes = None
         self.axe_buttons = []
         self.setup_ui()
 
@@ -37,14 +39,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.marker_cbx.setCurrentText("'.'")
         self.line_style_cbx.setCurrentText("'-'")
         self.draw_style_cbx.setCurrentText('steps-post')
+        self.parameters_tree_widget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
 
     def show_hide_variables_panel(self):
         self.parameters_tree_widget.setVisible(not self.parameters_tree_widget.isVisible())
         self.search_field.setVisible(not self.search_field.isVisible())
         if self.parameters_btn.text() == 'hide':
             self.parameters_btn.setText('show')
+            # save defaults splitter sizes before modification
+            self.splitter_sizes = self.splitter.sizes()
+            self.splitter.setSizes([0, sum([int(x) for x in self.splitter_sizes])])
         else:
             self.parameters_btn.setText('hide')
+            # save defaults splitter sizes before modification
+            self.splitter.setSizes(self.splitter_sizes)
 
     def get_filter_extension(self):
         # TODO to be modified for contextual menu feature
@@ -108,6 +116,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_drawstyle(self):
         return self.draw_style_cbx.currentText()
+
+    def resizeEvent(self, event: QResizeEvent):
+        super(MainWindow, self).resizeEvent(event)
+        for i in range(self.parameters_tree_widget.columnCount()):
+            self.parameters_tree_widget.resizeColumnToContents(i)
 
 
 class LogFileWindow(QDialog, Ui_LogDialog):

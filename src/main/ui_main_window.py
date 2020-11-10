@@ -43,25 +43,27 @@ class Ui_MainWindow(object):
         self.actionShow_log.setObjectName(u"actionShow_log")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.horizontalLayout = QHBoxLayout(self.centralwidget)
-        self.horizontalLayout.setSpacing(0)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.variables_layout = QVBoxLayout()
-        self.variables_layout.setSpacing(5)
+        self.horizontalLayout_2 = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.splitter = QSplitter(self.centralwidget)
+        self.splitter.setObjectName(u"splitter")
+        self.splitter.setOrientation(Qt.Horizontal)
+        self.widget = QWidget(self.splitter)
+        self.widget.setObjectName(u"widget")
+        self.variables_layout = QVBoxLayout(self.widget)
         self.variables_layout.setObjectName(u"variables_layout")
-        self.variables_layout.setSizeConstraint(QLayout.SetDefaultConstraint)
-        self.search_field = QLineEdit(self.centralwidget)
+        self.variables_layout.setContentsMargins(0, 0, 0, 0)
+        self.search_field = QLineEdit(self.widget)
         self.search_field.setObjectName(u"search_field")
 
         self.variables_layout.addWidget(self.search_field)
 
-        self.parameters_tree_widget = QTreeWidget(self.centralwidget)
+        self.parameters_tree_widget = QTreeWidget(self.widget)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setText(0, u"1");
         self.parameters_tree_widget.setHeaderItem(__qtreewidgetitem)
         self.parameters_tree_widget.setObjectName(u"parameters_tree_widget")
-        self.parameters_tree_widget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.parameters_tree_widget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
         self.parameters_tree_widget.setSelectionMode(QAbstractItemView.MultiSelection)
         self.parameters_tree_widget.setSelectionBehavior(QAbstractItemView.SelectItems)
         self.parameters_tree_widget.setSortingEnabled(True)
@@ -71,10 +73,13 @@ class Ui_MainWindow(object):
 
         self.variables_layout.addWidget(self.parameters_tree_widget)
 
-
-        self.horizontalLayout.addLayout(self.variables_layout)
-
-        self.buttons_frame = QFrame(self.centralwidget)
+        self.splitter.addWidget(self.widget)
+        self.widget1 = QWidget(self.splitter)
+        self.widget1.setObjectName(u"widget1")
+        self.horizontalLayout = QHBoxLayout(self.widget1)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.buttons_frame = QFrame(self.widget1)
         self.buttons_frame.setObjectName(u"buttons_frame")
         self.buttons_frame.setMaximumSize(QSize(45, 16777215))
         self.buttons_frame.setFrameShape(QFrame.Panel)
@@ -108,7 +113,7 @@ class Ui_MainWindow(object):
         self.plots_layout.setObjectName(u"plots_layout")
         self.plots_button_layout = QHBoxLayout()
         self.plots_button_layout.setObjectName(u"plots_button_layout")
-        self.btn_clear_plots = QPushButton(self.centralwidget)
+        self.btn_clear_plots = QPushButton(self.widget1)
         self.btn_clear_plots.setObjectName(u"btn_clear_plots")
         font = QFont()
         font.setPointSize(12)
@@ -116,7 +121,7 @@ class Ui_MainWindow(object):
 
         self.plots_button_layout.addWidget(self.btn_clear_plots)
 
-        self.remove_lbl = QLabel(self.centralwidget)
+        self.remove_lbl = QLabel(self.widget1)
         self.remove_lbl.setObjectName(u"remove_lbl")
         sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -127,20 +132,20 @@ class Ui_MainWindow(object):
 
         self.plots_button_layout.addWidget(self.remove_lbl)
 
-        self.remove_cbx = QComboBox(self.centralwidget)
+        self.remove_cbx = QComboBox(self.widget1)
         self.remove_cbx.setObjectName(u"remove_cbx")
         self.remove_cbx.setFont(font)
         self.remove_cbx.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
         self.plots_button_layout.addWidget(self.remove_cbx)
 
-        self.label = QLabel(self.centralwidget)
+        self.label = QLabel(self.widget1)
         self.label.setObjectName(u"label")
         self.label.setMaximumSize(QSize(40, 16777215))
 
         self.plots_button_layout.addWidget(self.label)
 
-        self.marker_cbx = QComboBox(self.centralwidget)
+        self.marker_cbx = QComboBox(self.widget1)
         self.marker_cbx.setObjectName(u"marker_cbx")
         font1 = QFont()
         font1.setPointSize(12)
@@ -151,25 +156,25 @@ class Ui_MainWindow(object):
 
         self.plots_button_layout.addWidget(self.marker_cbx)
 
-        self.label_2 = QLabel(self.centralwidget)
+        self.label_2 = QLabel(self.widget1)
         self.label_2.setObjectName(u"label_2")
         self.label_2.setMaximumSize(QSize(48, 16777215))
 
         self.plots_button_layout.addWidget(self.label_2)
 
-        self.line_style_cbx = QComboBox(self.centralwidget)
+        self.line_style_cbx = QComboBox(self.widget1)
         self.line_style_cbx.setObjectName(u"line_style_cbx")
         self.line_style_cbx.setFont(font1)
         self.line_style_cbx.setSizeAdjustPolicy(QComboBox.AdjustToContents)
 
         self.plots_button_layout.addWidget(self.line_style_cbx)
 
-        self.label_3 = QLabel(self.centralwidget)
+        self.label_3 = QLabel(self.widget1)
         self.label_3.setObjectName(u"label_3")
 
         self.plots_button_layout.addWidget(self.label_3)
 
-        self.draw_style_cbx = QComboBox(self.centralwidget)
+        self.draw_style_cbx = QComboBox(self.widget1)
         self.draw_style_cbx.setObjectName(u"draw_style_cbx")
         self.draw_style_cbx.setFont(font)
 
@@ -182,7 +187,7 @@ class Ui_MainWindow(object):
 
         self.plots_layout.addLayout(self.plots_button_layout)
 
-        self.plot_widget = MatplotlibWidget(self.centralwidget)
+        self.plot_widget = MatplotlibWidget(self.widget1)
         self.plot_widget.setObjectName(u"plot_widget")
 
         self.plots_layout.addWidget(self.plot_widget)
@@ -191,7 +196,10 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addLayout(self.plots_layout)
 
-        self.horizontalLayout.setStretch(2, 1)
+        self.splitter.addWidget(self.widget1)
+
+        self.horizontalLayout_2.addWidget(self.splitter)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
