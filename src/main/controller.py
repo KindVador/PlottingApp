@@ -5,6 +5,7 @@ from pathlib import Path
 from PySide2.QtCore import Qt, QSize
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
+import pandas as pd
 
 from .view import MainWindow, LogFileWindow
 from .model import PlotModel
@@ -111,10 +112,12 @@ class QtMainController(object):
         logger.info("IMPORT DATA ACTION")
         dic = ReadCSVController(preset_model=self.cfg.model['csv_presets'])
         dic.config_updated.connect(self.cfg.save_to_disk)
-        self.model.dataframe = dic.get_data_with_dialog()
-        # updates tree items
-        self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)
-        self.view.parameters_tree_widget.resizeColumnToContents(0)
+        df = dic.get_data_with_dialog()
+        if isinstance(df, pd.DataFrame):
+            self.model.dataframe = df
+            # updates tree items
+            self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)
+            self.view.parameters_tree_widget.resizeColumnToContents(0)
 
     def export_data(self):
         logger.info("EXPORT DATA ACTION")
