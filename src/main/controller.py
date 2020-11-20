@@ -2,13 +2,13 @@
 import logging
 from pathlib import Path
 
-from PySide2.QtCore import Qt, QSize
+from PySide2.QtCore import Qt, QSize, QSortFilterProxyModel
 from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
 import pandas as pd
 
 from .view import MainWindow, LogFileWindow
-from .model import PlotModel
+from .model import PlotModel, DataSource
 from data_import.controller import ReadCSVController
 from configuration.controller import ApplicationConfigurationController
 
@@ -37,6 +37,7 @@ class QtMainController(object):
         self.model = PlotModel()
         self.view = MainWindow(version)
         self.log_view = None
+        self.parameters_proxy_model = QSortFilterProxyModel()
 
     def __call__(self, *args, **kwargs):
         logger.debug(f"QtMainController.__call__({args}, {kwargs})")
@@ -87,12 +88,17 @@ class QtMainController(object):
         self.view.actionAbout.triggered.connect(self.show_about)
         self.view.actionShow_log.triggered.connect(self.show_log)
         # main window
+        self.parameters_proxy_model.setSourceModel(self.model.sources)
+        self.parameters_proxy_model.setRecursiveFilteringEnabled(True)
+        self.parameters_proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.view.parameters_tree_widget.setModel(self.parameters_proxy_model)
         self.view.parameters_btn.clicked.connect(self.view.show_hide_variables_panel)
         self.view.add_btn.clicked.connect(self._add_clicked)
-        self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
+        # self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
         self.view.btn_clear_plots.clicked.connect(self._clear_all_plots)
         self.view.remove_cbx.activated.connect(self.remove_subplot)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
+        self.view.search_field.textChanged.connect(self._apply_proxy_filter)
 
     def _open(self):
         logger.info("OPEN ACTION")
@@ -112,11 +118,11 @@ class QtMainController(object):
         logger.info("IMPORT DATA ACTION")
         dic = ReadCSVController(preset_model=self.cfg.model['csv_presets'])
         dic.config_updated.connect(self.cfg.save_to_disk)
-        df = dic.get_data_with_dialog()
+        file_path, df = dic.get_data_with_dialog()
+        print('Add a new data source --> ', file_path, type(df))
         if isinstance(df, pd.DataFrame):
-            self.model.dataframe = df
-            # updates tree items
-            self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)
+            self.model.add_data_source(DataSource.from_dataframe(f'DS{str(len(self.model.sources)+1)}:{Path(file_path).name}', df))
+            self.view.parameters_tree_widget.clearSelection()
             self.view.parameters_tree_widget.resizeColumnToContents(0)
 
     def export_data(self):
@@ -134,18 +140,23 @@ class QtMainController(object):
             self.log_view = LogFileWindow()
         self.log_view.show_log_content(self.ctx.log_file)
 
+    def _apply_proxy_filter(self, regex_str):
+        self.parameters_proxy_model.setFilterRegExp(str(regex_str).strip())
+
     def _add_clicked(self):
         d = {}
-        for si in self.view.parameters_tree_widget.selectedItems():
-            if si.parent():
-                if si.parent().data(0, Qt.DisplayRole) in d:
-                    d[si.parent().data(0, Qt.DisplayRole)] += [si.data(0, Qt.DisplayRole)]
-                else:
-                    d[si.parent().data(0, Qt.DisplayRole)] = [si.data(0, Qt.DisplayRole)]
-            elif si.childCount() > 0:
-                d[si.data(0, Qt.DisplayRole)] = [si.child(i).data(0, Qt.DisplayRole) for i in range(si.childCount())]
-            else:
-                d[si.data(0, Qt.DisplayRole)] = None
+        for si in self.view.parameters_tree_widget.selectedIndexes():
+            d[str(self.view.parameters_tree_widget.model().data(si))] = None
+
+            # if si.parent():
+            #     if si.parent().data(0, Qt.DisplayRole) in d:
+            #         d[si.parent().data(0, Qt.DisplayRole)] += [si.data(0, Qt.DisplayRole)]
+            #     else:
+            #         d[si.parent().data(0, Qt.DisplayRole)] = [si.data(0, Qt.DisplayRole)]
+            # elif si.childCount() > 0:
+            #     d[si.data(0, Qt.DisplayRole)] = [si.child(i).data(0, Qt.DisplayRole) for i in range(si.childCount())]
+            # else:
+            #     d[si.data(0, Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
         logger.info(f"add parameter {d}")
         self.add_subplot(d)

@@ -20,13 +20,13 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="variables_layout">
         <item>
          <widget class="QLineEdit" name="search_field"/>
         </item>
         <item>
-         <widget class="QTreeWidget" name="parameters_tree_widget">
+         <widget class="QTreeView" name="parameters_tree_widget">
           <property name="sizeAdjustPolicy">
            <enum>QAbstractScrollArea::AdjustIgnored</enum>
           </property>
@@ -36,28 +36,11 @@
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectItems</enum>
           </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-          <property name="allColumnsShowFocus">
-           <bool>true</bool>
-          </property>
-          <property name="expandsOnDoubleClick">
-           <bool>false</bool>
-          </property>
-          <property name="columnCount">
-           <number>1</number>
-          </property>
-          <column>
-           <property name="text">
-            <string notr="true">1</string>
-           </property>
-          </column>
          </widget>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QFrame" name="buttons_frame">

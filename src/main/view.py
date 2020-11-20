@@ -26,9 +26,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSave.setEnabled(False)
         self.actionExport.setEnabled(False)
         self.actionShow_in_table.setEnabled(False)
-        # update widgets
-        self.parameters_tree_widget.setHeaderLabels(['Variable Name'])
-        self.parameters_tree_widget.setColumnCount(1)
         self.marker_cbx.addItems([f"'{m}'" for m in ['.', ',', 'o', 'x', 'X', '+', 'v', '^', '<', '>', 'p', 'P', '*',
                                                      'h', 'H', 'D', 'd', 'None']])
         self.line_style_cbx.addItems([f"'{ls}'" for ls in ['-', '--', '-.', ':', 'None']])
@@ -119,8 +116,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def resizeEvent(self, event: QResizeEvent):
         super(MainWindow, self).resizeEvent(event)
-        for i in range(self.parameters_tree_widget.columnCount()):
-            self.parameters_tree_widget.resizeColumnToContents(i)
+        if self.parameters_tree_widget.model():
+            for i in range(self.parameters_tree_widget.model().columnCount()):
+                self.parameters_tree_widget.resizeColumnToContents(i)
 
 
 class LogFileWindow(QDialog, Ui_LogDialog):

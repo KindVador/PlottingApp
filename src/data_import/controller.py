@@ -76,7 +76,7 @@ class ReadCSVController(QObject):
 
     def get_data_with_dialog(self):
         if self.view.exec_():
-            return self.model.get_dataframe()
+            return self.model.csv_path, self.model.get_dataframe()
         else:
             return None
 
