@@ -71,16 +71,6 @@ class Ui_CSVConfigDialog(object):
 
         self.infos_preset_layout.addItem(self.horizontalSpacer)
 
-        self.index_label = QLabel(CSVConfigDialog)
-        self.index_label.setObjectName(u"index_label")
-
-        self.infos_preset_layout.addWidget(self.index_label)
-
-        self.index_cbx = QComboBox(CSVConfigDialog)
-        self.index_cbx.setObjectName(u"index_cbx")
-
-        self.infos_preset_layout.addWidget(self.index_cbx)
-
 
         self.verticalLayout.addLayout(self.infos_preset_layout)
 
@@ -163,7 +153,6 @@ class Ui_CSVConfigDialog(object):
         self.file_button.setText(QCoreApplication.translate("CSVConfigDialog", u"select", None))
         self.preset_label.setText(QCoreApplication.translate("CSVConfigDialog", u"Preset:", None))
         self.save_cfg_button.setText(QCoreApplication.translate("CSVConfigDialog", u"Save configuration", None))
-        self.index_label.setText(QCoreApplication.translate("CSVConfigDialog", u"Index:", None))
         self.options_label.setText(QCoreApplication.translate("CSVConfigDialog", u"Options:", None))
         self.columns_label.setText(QCoreApplication.translate("CSVConfigDialog", u"Columns:", None))
         self.preview_label.setText(QCoreApplication.translate("CSVConfigDialog", u"Preview:", None))
