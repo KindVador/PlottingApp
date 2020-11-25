@@ -1,13 +1,25 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from PySide2.QtWidgets import QWidget, QDialog, QStyledItemDelegate, QComboBox, QStyleOptionViewItem
+from PySide2.QtWidgets import QWidget, QDialog, QStyledItemDelegate, QComboBox, QStyleOptionViewItem, QCheckBox
 from PySide2.QtCore import Qt, Signal, Slot, QModelIndex, QAbstractItemModel
 
 from .ui_csv_config_widget import Ui_CSVConfigDialog
 from .ui_date_format_dialog import Ui_DateFormatDialog
 
 logger = logging.getLogger("PlottingApp")
+
+
+class CheckBoxDelegate(QStyledItemDelegate):
+
+    def __init__(self, owner):
+        super().__init__(owner)
+        self.editor = None
+
+    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
+        self.editor = QCheckBox(parent)
+        self.editor.setChecked(index.model().data(index, Qt.DisplayRole))
+        return self.editor
 
 
 class ComboBoxDelegate(QStyledItemDelegate):
@@ -61,8 +73,9 @@ class ReadCSVDialog(QDialog, Ui_CSVConfigDialog):
         self.columns_table.setAlternatingRowColors(True)
         self.preview_table.setAlternatingRowColors(True)
 
-    def set_types_values(self, values, column_position=1):
-        self.columns_table.setItemDelegateForColumn(column_position, ComboBoxDelegate(self, values))
+    def configure(self, type_values, type_pos=1, index_pos=2):
+        self.columns_table.setItemDelegateForColumn(type_pos, ComboBoxDelegate(self, type_values))
+        # self.columns_table.setItemDelegateForColumn(index_pos, CheckBoxDelegate(self))
 
     # def make_combobox_editable_in_single_click(self, column_position=1):
     #     # make combo boxes editable with a single-click:

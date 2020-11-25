@@ -5,7 +5,7 @@ import typing
 from collections import OrderedDict
 
 import pandas as pd
-from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject, QAbstractItemModel
+from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject, QAbstractItemModel, QAbstractListModel
 
 logger = logging.getLogger("PlottingApp")
 
@@ -76,8 +76,6 @@ class OptionTableModel(QAbstractTableModel):
         flags = super(self.__class__, self).flags(index)
         if index.column() == 1:
             flags |= Qt.ItemIsEditable
-        # elif index.column() in (5, 6):
-        #     flags |= Qt.ItemIsUserCheckable
         return flags
 
     def data(self, index: QModelIndex, role: int = ...):
@@ -152,13 +150,13 @@ class ColumnTableModel(QAbstractTableModel):
 
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
-        self.header = {0: "CSV COLUMN", 1: "TYPE", 2: "NEW NAME"}
+        self.header = {0: "CSV COLUMN", 1: "TYPE", 2: "INDEX", 3: "NEW NAME"}
         self.columns = []
-        self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'object', 'str']
+        self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'object', 'str', 'datetime']
 
     @property
     def renaming_dict(self):
-        return {c[0]: c[2] for c in self.columns if c[2] is not None}
+        return {c[0]: c[3] for c in self.columns if c[3] is not None}
 
     @property
     def types_dict(self):
@@ -166,7 +164,7 @@ class ColumnTableModel(QAbstractTableModel):
 
     @staticmethod
     def __adapt_type(value: str) -> str:
-        if value.lower() in ['str', 'string']:
+        if value.lower() in ['str', 'string', 'datetime']:
             return 'object'
         elif value.lower() in ['bool', 'boolean', 'bit']:
             return 'Int8'
@@ -196,15 +194,22 @@ class ColumnTableModel(QAbstractTableModel):
         flags = super(self.__class__, self).flags(index)
         if index.column() > 0:
             flags |= Qt.ItemIsEditable
+        elif index.column() == 2:
+            flags |= Qt.ItemIsUserCheckable
         return flags
 
     def data(self, index: QModelIndex, role: int = ...):
-        if role == Qt.DisplayRole:
+        if role == Qt.DisplayRole and index.column() != 2:
             return self.columns[index.row()][index.column()]
         elif role == Qt.FontRole:
             return None
         elif role == Qt.ForegroundRole:
             return None
+        elif role == Qt.CheckStateRole and index.column() == 2:
+            if self.columns[index.row()][index.column()] is True:
+                return Qt.Checked
+            else:
+                return Qt.Unchecked
         elif role == Qt.TextAlignmentRole:
             if index.column() == 0:
                 return int(Qt.AlignLeft | Qt.AlignVCenter)
@@ -220,7 +225,7 @@ class ColumnTableModel(QAbstractTableModel):
 
     def add_column(self, csv_name, data_type, new_name):
         self.beginInsertRows(self.index(len(self.columns), 1), len(self.columns), len(self.columns))
-        self.columns.append([csv_name, data_type, new_name])
+        self.columns.append([csv_name, data_type, False, new_name])
         self.endInsertRows()
 
     def to_dict(self) -> dict:
@@ -230,7 +235,7 @@ class ColumnTableModel(QAbstractTableModel):
         Returns:
             dict
         """
-        return {c[0]: (c[2], c[1]) for c in self.columns if c[2] is not None}
+        return {c[0]: (c[3], c[1], c[2]) for c in self.columns if c[3] is not None}
 
     def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
         logger.debug(f"ColumnTableModel.setData({index}, {value}, {role})")
@@ -374,6 +379,29 @@ class DateFormatModel(QAbstractItemModel):
             return True
 
 
+# class IndexModel(QAbstractListModel):
+#
+#     def __init__(self, parent=None):
+#         super().__init__(parent=parent)
+#         self._indexes = []
+#
+#     def rowCount(self, parent: QModelIndex = ...) -> int:
+#         return len(self._indexes)
+#
+#     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
+#         if not index.isValid() or index.row() < 0 or index.row() >= self.rowCount():
+#             return None
+#         if role == Qt.DisplayRole:
+#             return self._indexes[index.row()]
+#         return None
+#
+#     def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...) -> typing.Any:
+#         return 'Index'
+#
+#     def add_index(self, index: str) -> None:
+#         self._indexes.append(index)
+
+
 class ReadCSVModel(QObject):
 
     date_format_required = Signal()
@@ -386,8 +414,10 @@ class ReadCSVModel(QObject):
         self.preview_model = DataFrameTableModel()
         self.preset_model = PresetBoxModel(preset_model)
         self.date_format_model = DateFormatModel()
+        # self.index_model = IndexModel()
         self._date_format = ''
         self._preview_raw_data = None
+        self._index_column = None
         # connect
         self.options_model.option_modified.connect(self.update_preview)
         self.options_model.date_format_required.connect(self.date_format_required.emit)
@@ -463,6 +493,7 @@ class ReadCSVModel(QObject):
                 self.columns_model.clear()
                 for c in self.preview_model.dataframe.columns:
                     self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), None)
+                    # self.index_model.add_index(c)
 
     def get_dataframe(self):
         logger.info('requiring DataFrame object to model')
@@ -470,3 +501,7 @@ class ReadCSVModel(QObject):
         # add dtype option in opts dict
         opts['dtype'] = self.columns_model.types_dict
         return self._create_dataframe(self.csv_path, opts, self.columns_model.renaming_dict)
+
+    # def set_dataframe_index(self, index):
+    #     self._index_column = index
+    #     self.update_preview()

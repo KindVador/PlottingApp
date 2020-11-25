@@ -27,7 +27,7 @@ class ReadCSVController(QObject):
         logger.info("initialization of the main view")
         self._make_view_connections()
         # init ComboBox values for type columns
-        self.view.set_types_values(self.model.columns_model.allowed_types)
+        self.view.configure(self.model.columns_model.allowed_types, 1)
         # connect widgets to models
         self.view.preset_cbox.setModel(self.model.preset_model)
 
@@ -40,6 +40,8 @@ class ReadCSVController(QObject):
         self.view.preview_table.setModel(self.model.preview_model)
         self.model.date_format_required.connect(self._ask_date_format)
         self.view.preset_cbox.currentTextChanged.connect(self.load_preset)
+        # self.view.index_cbx.setModel(self.model.index_model)
+        # self.view.index_cbx.currentTextChanged.connect(self.model.set_dataframe_index)
 
     def _select_file(self):
         logger.info("SELECT FILE ACTION")
