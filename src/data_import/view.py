@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from PySide2.QtWidgets import QWidget, QDialog, QStyledItemDelegate, QComboBox, QStyleOptionViewItem, QCheckBox
-from PySide2.QtCore import Qt, Signal, Slot, QModelIndex, QAbstractItemModel
+from PySide2.QtWidgets import (QWidget, QDialog, QStyledItemDelegate, QComboBox, QStyleOptionViewItem, QStyle,
+                               QStyleOptionButton, QApplication)
+from PySide2.QtCore import Qt, Signal, QModelIndex, QEvent, QRect, QPoint
 
 from .ui_csv_config_widget import Ui_CSVConfigDialog
 from .ui_date_format_dialog import Ui_DateFormatDialog
@@ -11,15 +12,125 @@ logger = logging.getLogger("PlottingApp")
 
 
 class CheckBoxDelegate(QStyledItemDelegate):
+    """
+    A delegate that places a fully functioning QCheckBox in every cell of the column to which it's applied
+    """
 
-    def __init__(self, owner):
-        super().__init__(owner)
-        self.editor = None
+    def __init__(self, parent):
+        QStyledItemDelegate.__init__(self, parent)
 
-    def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
-        self.editor = QCheckBox(parent)
-        self.editor.setChecked(index.model().data(index, Qt.DisplayRole))
-        return self.editor
+    def createEditor(self, parent, option, index):
+        """
+        Important, otherwise an editor is created if the user clicks in this cell.
+        ** Need to hook up a signal to the model
+
+        Args:
+            parent:
+            option:
+            index:
+
+        Returns:
+
+        """
+        return None
+
+    def paint(self, painter, option, index):
+        """
+        Paint a checkbox without the label.
+
+        Args:
+            painter:
+            option:
+            index:
+
+        Returns:
+
+        """
+
+        checked = bool(index.data())
+        check_box_style_option = QStyleOptionButton()
+
+        if (index.flags() & Qt.ItemIsEditable) > 0:
+            check_box_style_option.state |= QStyle.State_Enabled
+        else:
+            check_box_style_option.state |= QStyle.State_ReadOnly
+
+        check_box_style_option.state |= (QStyle.State_On if checked else QStyle.State_Off)
+
+        check_box_style_option.rect = self.getCheckBoxRect(option)
+
+        check_box_style_option.state |= QStyle.State_Enabled
+
+        QApplication.style().drawControl(QStyle.CE_CheckBox, check_box_style_option, painter)
+
+    def editorEvent(self, event, model, option, index):
+        """
+        Change the data in the model and the state of the checkbox if the user presses the left mousebutton or presses
+        Key_Space or Key_Select and this cell is editable. Otherwise do nothing.
+
+        Args:
+            event:
+            model:
+            option:
+            index:
+
+        Returns:
+
+        """
+        if not (index.flags() & Qt.ItemIsEditable) > 0:
+            return False
+
+        # Do not change the checkbox-state
+        if event.type() == QEvent.MouseButtonPress:
+          return False
+        if event.type() in [QEvent.MouseButtonRelease, QEvent.MouseButtonDblClick]:
+            if event.button() != Qt.LeftButton or not self.getCheckBoxRect(option).contains(event.pos()):
+                return False
+            if event.type() == QEvent.MouseButtonDblClick:
+                return True
+        elif event.type() == QEvent.KeyPress:
+            if event.key() not in [Qt.Key_Space, Qt.Key_Select]:
+                return False
+        else:
+            return False
+
+        # Change the checkbox-state
+        self.setModelData(None, model, index)
+        return True
+
+    def setModelData(self, editor, model, index):
+        """
+        The user wanted to change the old state in the opposite.
+
+        Args:
+            editor:
+            model:
+            index:
+
+        Returns:
+
+        """
+        newValue = not bool(index.data())
+        model.setData(index, newValue, Qt.EditRole)
+
+    def getCheckBoxRect(self, option):
+        """
+
+        Args:
+            option:
+
+        Returns:
+
+        """
+        check_box_style_option = QStyleOptionButton()
+        check_box_rect = QApplication.style().subElementRect(QStyle.SE_CheckBoxIndicator, check_box_style_option, None)
+        check_box_point = QPoint(option.rect.x() +
+                                 option.rect.width() / 2 -
+                                 check_box_rect.width() / 2,
+                                 option.rect.y() +
+                                 option.rect.height() / 2 -
+                                 check_box_rect.height() / 2)
+        return QRect(check_box_point, check_box_rect.size())
 
 
 class ComboBoxDelegate(QStyledItemDelegate):
@@ -32,36 +143,7 @@ class ComboBoxDelegate(QStyledItemDelegate):
     def createEditor(self, parent: QWidget, option: QStyleOptionViewItem, index: QModelIndex) -> QWidget:
         self.editor = QComboBox(parent)
         self.editor.addItems(self.items)
-        # self.editor.activated.connect(self.emit_commit_data)
         return self.editor
-
-    # def paint(self, painter, option, index):
-    #     value = index.data(Qt.DisplayRole)
-    #     style = QApplication.style()
-    #     opt = QStyleOptionComboBox()
-    #     opt.text = str(value)
-    #     opt.rect = option.rect
-    #     style.drawComplexControl(QStyle.CC_ComboBox, opt, painter)
-    #     QStyledItemDelegate.paint(self, painter, option, index)
-
-    # def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
-    #     print(f"ComboBoxDelegate.setEditorData({editor}, {index})")
-    #     value = index.data(Qt.DisplayRole)
-    #     num = self.items.index(value)
-    #     editor.setCurrentIndex(num)
-
-    # def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex) -> None:
-    #     value = editor.currentText()
-    #     print(value, value, value, value)
-    #     model.setData(index, value, Qt.DisplayRole)
-
-    # def updateEditorGeometry(self, editor, option, index):
-    #     editor.setGeometry(option.rect)
-
-    # def emit_commit_data(self, position: int) -> None:
-    #     print(f"ComboBoxDelegate.emit_commit_data({position})")
-    #     self.commitData.emit(self.editor)
-    #     self.closeEditor.emit(self.editor)
 
 
 class ReadCSVDialog(QDialog, Ui_CSVConfigDialog):
@@ -75,12 +157,7 @@ class ReadCSVDialog(QDialog, Ui_CSVConfigDialog):
 
     def configure(self, type_values, type_pos=1, index_pos=2):
         self.columns_table.setItemDelegateForColumn(type_pos, ComboBoxDelegate(self, type_values))
-        # self.columns_table.setItemDelegateForColumn(index_pos, CheckBoxDelegate(self))
-
-    # def make_combobox_editable_in_single_click(self, column_position=1):
-    #     # make combo boxes editable with a single-click:
-    #     for row in range(len(self.columns_table.model())):
-    #         self.columns_table.openPersistentEditor(self.columns_table.model().index(row, column_position))
+        self.columns_table.setItemDelegateForColumn(index_pos, CheckBoxDelegate(self))
 
 
 class DateFormatDialog(QDialog, Ui_DateFormatDialog):

@@ -40,8 +40,6 @@ class ReadCSVController(QObject):
         self.view.preview_table.setModel(self.model.preview_model)
         self.model.date_format_required.connect(self._ask_date_format)
         self.view.preset_cbox.currentTextChanged.connect(self.load_preset)
-        # self.view.index_cbx.setModel(self.model.index_model)
-        # self.view.index_cbx.currentTextChanged.connect(self.model.set_dataframe_index)
 
     def _select_file(self):
         logger.info("SELECT FILE ACTION")
@@ -83,7 +81,7 @@ class ReadCSVController(QObject):
             return None
 
     def set_date_format(self, date_format):
-        logger.debug("ReadCSVController.set_date_format(", date_format, ")")
+        logger.debug(f"ReadCSVController.set_date_format({date_format})")
         self.model._date_format = date_format
 
     @Slot(name="ask_date_format")
