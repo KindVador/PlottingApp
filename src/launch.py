@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*
 import os
+# hook for macOS Big Sur compatibility with PyQt5 and PySide2 libraries
+if os.name == 'posix' and os.sys.platform == 'darwin':
+    os.environ["QT_MAC_WANTS_LAYER"] = "1"
 from pathlib import Path
 import sys
 import argparse
@@ -44,7 +47,7 @@ class AppContext(object):
         """
         try:
             # PyInstaller creates a temp folder and stores path in _MEIPASS, and places our data files in a folder
-            # relative to that temp folder named as specified in the datas tuple in the spec file
+            # relative to that temp folder named as specified in the data tuple in the spec file
             base_path = Path(sys._MEIPASS)
         except Exception:
             # sys._MEIPASS is not defined, so use the original path
