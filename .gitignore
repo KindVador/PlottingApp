@@ -4,7 +4,7 @@
 .idea/
 venv/
 build/
-test_data/
+tests_data/old
 target/
 docs/build
 dist/
