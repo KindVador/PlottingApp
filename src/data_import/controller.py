@@ -27,7 +27,7 @@ class ReadCSVController(QObject):
         logger.info("initialization of the main view")
         self._make_view_connections()
         # init ComboBox values for type columns
-        self.view.set_types_values(self.model.columns_model.allowed_types)
+        self.view.configure(self.model.columns_model.allowed_types, 1)
         # connect widgets to models
         self.view.preset_cbox.setModel(self.model.preset_model)
 
@@ -81,7 +81,7 @@ class ReadCSVController(QObject):
             return None
 
     def set_date_format(self, date_format):
-        logger.debug("ReadCSVController.set_date_format(", date_format, ")")
+        logger.debug(f"ReadCSVController.set_date_format({date_format})")
         self.model._date_format = date_format
 
     @Slot(name="ask_date_format")

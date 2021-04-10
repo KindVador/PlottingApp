@@ -3,16 +3,30 @@ import io
 import logging
 import typing
 from collections import OrderedDict
+from collections.abc import Iterable
 
 import pandas as pd
 from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject, QAbstractItemModel
 
 logger = logging.getLogger("PlottingApp")
 
-default_options = {'sep': (';', str), 'skiprows': (None, int), 'decimal': ('.', str), 'header': ('infer', str),
-                   'index_col': (None, int), 'na_values': ("?", str), 'nrows': (None, int),
+default_options = {'sep': (';', str), 'skiprows': (None, int), 'decimal': ('.', str), 'header': ('infer', [int, str]),
+                   'index_col': (None, [int, str]), 'na_values': ("?", str), 'nrows': (None, int),
                    'parse_dates': (False, bool), 'keep_date_col': (False, bool), 'comment': ("#", str),
                    'encoding': (None, str)}
+
+
+def format_gmt(gmt):
+    """
+    Removes point character in gmt string.
+
+    Args:
+        gmt (str): GMT string to format.
+
+    Returns:
+        GMT string without point.
+    """
+    return gmt.replace('.', '')
 
 
 class PresetBoxModel(QAbstractItemModel):
@@ -33,10 +47,10 @@ class PresetBoxModel(QAbstractItemModel):
         else:
             return None
 
-    def index(self, row, column, parent=None, *args, **kwargs):
+    def index(self, row: int, column: int, parent: QModelIndex = None, *args, **kwargs) -> QModelIndex:
         return self.createIndex(row, column)
 
-    def parent(self, index):
+    def parent(self, index: QModelIndex) -> QModelIndex:
         return QModelIndex()
 
 
@@ -57,10 +71,10 @@ class OptionTableModel(QAbstractTableModel):
         self.indexes = list(self.options.keys())
         self.types = {k: v[1] for k, v in default_options.items()}
 
-    def rowCount(self, parent: QModelIndex = ..., *args, **kwargs):
+    def rowCount(self, parent: QModelIndex = ..., *args, **kwargs) -> int:
         return len(self.options)
 
-    def columnCount(self, parent: QModelIndex = ..., *args, **kwargs):
+    def columnCount(self, parent: QModelIndex = ..., *args, **kwargs) -> int:
         return len(self.header)
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
@@ -76,8 +90,6 @@ class OptionTableModel(QAbstractTableModel):
         flags = super(self.__class__, self).flags(index)
         if index.column() == 1:
             flags |= Qt.ItemIsEditable
-        # elif index.column() in (5, 6):
-        #     flags |= Qt.ItemIsUserCheckable
         return flags
 
     def data(self, index: QModelIndex, role: int = ...):
@@ -98,7 +110,7 @@ class OptionTableModel(QAbstractTableModel):
         else:
             return None
 
-    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
+    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...) -> bool:
         if not index.isValid():
             return False
 
@@ -117,7 +129,7 @@ class OptionTableModel(QAbstractTableModel):
         self.__init_attributes()
         self.endResetModel()
 
-    def to_dict(self, keep_none_value=True):
+    def to_dict(self, keep_none_value=True) -> dict:
         # return {o[0]: o[2](o[1]) for o in self.options if o[1] is not None}
         if keep_none_value:
             return {k: v for k, v in self.options.items()}
@@ -138,7 +150,15 @@ class OptionTableModel(QAbstractTableModel):
             else:
                 self.options[name] = False
         else:
-            self.options[name] = self.types[name](value)
+            if isinstance(self.types[name], Iterable):
+                for t in self.types[name]:
+                    try:
+                        self.options[name] = t(value)
+                        break
+                    except ValueError:
+                        pass
+            else:
+                self.options[name] = self.types[name](value)
         self.endResetModel()
         # we need to emit a signal to reload with new option value
         self.option_modified.emit()
@@ -146,19 +166,24 @@ class OptionTableModel(QAbstractTableModel):
     def add_option(self, name, value):
         self.set_option(name, value)
 
+    def get_option(self, name):
+        return self.options[name]
+
 
 class ColumnTableModel(QAbstractTableModel):
     column_modified = Signal()
+    index_changed = Signal(str)
 
     def __init__(self):
         super(self.__class__, self).__init__(parent=None)
-        self.header = {0: "CSV COLUMN", 1: "TYPE", 2: "NEW NAME"}
+        self.header = {0: "CSV COLUMN", 1: "TYPE", 2: "INDEX", 3: "NEW NAME"}
         self.columns = []
-        self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'object', 'str']
+        self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'object', 'str', 'datetime']
+        self.selected_index = QModelIndex()
 
     @property
     def renaming_dict(self):
-        return {c[0]: c[2] for c in self.columns if c[2] is not None}
+        return {c[0]: c[3] for c in self.columns if c[3] is not None}
 
     @property
     def types_dict(self):
@@ -166,7 +191,7 @@ class ColumnTableModel(QAbstractTableModel):
 
     @staticmethod
     def __adapt_type(value: str) -> str:
-        if value.lower() in ['str', 'string']:
+        if value.lower() in ['str', 'string', 'datetime']:
             return 'object'
         elif value.lower() in ['bool', 'boolean', 'bit']:
             return 'Int8'
@@ -218,9 +243,9 @@ class ColumnTableModel(QAbstractTableModel):
         self.columns = []
         self.endResetModel()
 
-    def add_column(self, csv_name, data_type, new_name):
+    def add_column(self, csv_name, data_type, is_index, new_name):
         self.beginInsertRows(self.index(len(self.columns), 1), len(self.columns), len(self.columns))
-        self.columns.append([csv_name, data_type, new_name])
+        self.columns.append([csv_name, data_type, is_index, new_name])
         self.endInsertRows()
 
     def to_dict(self) -> dict:
@@ -230,7 +255,7 @@ class ColumnTableModel(QAbstractTableModel):
         Returns:
             dict
         """
-        return {c[0]: (c[2], c[1]) for c in self.columns if c[2] is not None}
+        return {c[0]: (c[3], c[1], c[2]) for c in self.columns if c[3] is not None}
 
     def setData(self, index: QModelIndex, value: typing.Any, role: int = ...):
         logger.debug(f"ColumnTableModel.setData({index}, {value}, {role})")
@@ -245,8 +270,18 @@ class ColumnTableModel(QAbstractTableModel):
         if role in [Qt.EditRole, Qt.CheckStateRole]:
             self.columns[index.row()][index.column()] = value
             self.dataChanged.emit(index, index)
-            self.column_modified.emit()
+            # only simple index is supported, thus we set the previous selected index back to False
+            if self.selected_index.isValid():
+                self.columns[self.selected_index.row()][self.selected_index.column()] = False
+                self.dataChanged.emit(self.selected_index, self.selected_index)
+            self.selected_index = index
+            self.index_changed.emit(self.get_index_name())
         return True
+
+    def get_index_name(self):
+        if self.selected_index.isValid():
+            return self.data(self.createIndex(self.selected_index.row(), 0), Qt.DisplayRole)
+        return
 
 
 class DataFrameTableModel(QAbstractTableModel):
@@ -329,7 +364,7 @@ class DateFormatModel(QAbstractItemModel):
             return
 
     def remove_item(self, index):
-        logger.debug("DateFormatModel.remove_item(", index, ")")
+        logger.debug(f"DateFormatModel.remove_item({index})")
         self.is_dirty = True
 
     def headerData(self, section, orientation, role=None):
@@ -392,11 +427,14 @@ class ReadCSVModel(QObject):
         self.options_model.option_modified.connect(self.update_preview)
         self.options_model.date_format_required.connect(self.date_format_required.emit)
         self.columns_model.column_modified.connect(self.update_preview)
+        self.columns_model.index_changed.connect(self.set_index_name)
 
         # populate model with DateFormat
         # TODO load items from user config file
-        self.date_format_model.add_item(('TDA1', 'q-hh-mm-ss'))
-        self.date_format_model.add_item(('TDA2', 'q-hh:mm:ss.us'))
+        self.date_format_model.add_item(('TDA1', '%j-%H:%M:%S:%f'))
+        self.date_format_model.add_item(('TDA2', '%j-%H:%M:%S-%f.%f'))
+        self.date_format_model.add_item(('TDA3', '%j-%H:%M:%S'))
+
 
     @property
     def csv_path(self):
@@ -424,49 +462,85 @@ class ReadCSVModel(QObject):
             pass
 
     @staticmethod
-    def _create_dataframe(data, options_dict, renaming_dict=None):
+    def _create_dataframe(data, options_dict, renaming_dict=None, gmt_format=None):
+        logger.info('Creating DataFrame')
         logger.debug('\n'.join([f'\t\t{k} : {v}' for k, v in options_dict.items()]))
 
-        # drop dtypes from options_dict
+        # retrieving options that are included in dict but not supported by matplotlib
         if 'dtype' in options_dict.keys():
             dtype_dict = options_dict.pop('dtype')
         else:
             dtype_dict = None
 
+        if 'index_col' in options_dict.keys():
+            index_col = options_dict.pop('index_col')
+        else:
+            index_col = None
+
         # read file using pandas function
         df = pd.read_csv(data, **options_dict)
 
-        if dtype_dict:
-            # TODO adapt columns type using dtype_dict
-            pass
+        # if dtype_dict:
+        #     # TODO adapt columns type using dtype_dict
+        #     pass
 
         # sometimes the last column is empty due to a leading sep at the end of each line.
         if 'Unnamed' in df.columns[-1]:
             df.drop(df.columns[-1], axis=1, inplace=True)
 
-        # df.set_index('GMT', inplace=True, drop=True, append=False)
-        # df.index = pd.to_datetime(df.index, format=gmt_format)
+        if index_col and gmt_format:
+            # in some gmt_format the microsecond part is separated by a '.' which need to be removed
+            if gmt_format.endswith('%f.%f'):
+                df[index_col] = pd.to_datetime(df[index_col].apply(format_gmt), format=gmt_format[:-3])
+            else:
+                df[index_col] = pd.to_datetime(df[index_col], format=gmt_format)
+            df.set_index(index_col, inplace=True, drop=True, append=False)
+        elif index_col:
+            df.set_index(index_col, inplace=True, drop=True, append=False)
+
         if renaming_dict and len(renaming_dict) > 0:
             df.rename(columns=renaming_dict, inplace=True)
         return df
 
+    def set_index_name(self, col_name: str):
+        self.options_model.set_option('index_col', col_name)
+
     def update_preview(self):
+        if not self._preview_raw_data:
+            return
+
+        rn = self.columns_model.renaming_dict
         opts = self.options_model.to_dict(keep_none_value=False)
-        if self._preview_raw_data:
-            rn = self.columns_model.renaming_dict
-            # add dtype option in opts dict
-            opts['dtype'] = self.columns_model.types_dict
-            self.preview_model.dataframe = self._create_dataframe(io.StringIO(self._preview_raw_data), opts, rn)
-            # update of columns
-            # TODO to be improve as column modifications should be kept when an option is modified
-            if len(rn) == 0:
-                self.columns_model.clear()
-                for c in self.preview_model.dataframe.columns:
-                    self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), None)
+        # add dtype option in opts dict
+        opts['dtype'] = self.columns_model.types_dict
+        # if self.columns_model.selected_index:
+        #     opts['index_col'] = self.columns_model.selected_index
+        self.preview_model.dataframe = self._create_dataframe(io.StringIO(self._preview_raw_data), opts, rn)
+        # saving previous modifications before reloading columns as new option could had changed columns content
+        prev_renaming_dict = self.columns_model.to_dict()
+        prev_sel_index = self.columns_model.get_index_name()
+        # update of columns
+        # TODO to be improve as column modifications should be kept when an option is modified
+        if len(rn) == 0:
+            self.columns_model.clear()
+            for c in self.preview_model.dataframe.columns:
+                # apply previous index selection
+                is_index = bool(c == prev_sel_index)
+                new_name = prev_renaming_dict[c] if c in prev_renaming_dict.keys() else None
+                self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), is_index, new_name)
 
     def get_dataframe(self):
+        """
+        Create a `pandas.DataFrame` object with all the options selected by the User in GUI.
+
+        All the options are gathered from the `OptionTableModel` object except for the `dtype` option which  comes from
+        `ColumnTableModel` object.
+
+        Returns:
+            pandas.DataFrame - DataFrame from data file.
+        """
         logger.info('requiring DataFrame object to model')
         opts = self.options_model.to_dict()
         # add dtype option in opts dict
         opts['dtype'] = self.columns_model.types_dict
-        return self._create_dataframe(self.csv_path, opts, self.columns_model.renaming_dict)
+        return self._create_dataframe(self.csv_path, opts, self.columns_model.renaming_dict, self.date_format)
