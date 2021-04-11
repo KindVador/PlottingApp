@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 import argparse
 import logging
-from logging.handlers import RotatingFileHandler
+from logging import FileHandler
 
 from PySide2.QtWidgets import QApplication
 
@@ -64,7 +64,7 @@ class AppContext(object):
         if not os.path.exists(CONFIG_DIR):
             os.makedirs(CONFIG_DIR)
         self.log_file = os.path.join(CONFIG_DIR, "PlottingApp.log")
-        log_handler = RotatingFileHandler(self.log_file, maxBytes=5000, backupCount=2)
+        log_handler = FileHandler(self.log_file, mode='a')
         log_handler.setFormatter(formatter)
         self._logger.addHandler(log_handler)
         self._logger.info(f"logging level: {self._logger.level}")
