@@ -91,8 +91,8 @@ class QtMainController(object):
         self.view.add_btn.clicked.connect(self._add_clicked)
         self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
         self.view.btn_clear_plots.clicked.connect(self._clear_all_plots)
-        self.view.remove_cbx.activated.connect(self.remove_subplot)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
+        self.view.remove_axe_button.connect(self.remove_subplot)
 
     def _open(self):
         logger.info("OPEN ACTION")
@@ -183,7 +183,7 @@ class QtMainController(object):
         self.view.clear_all_plots()
 
     def remove_subplot(self, index):
-        logger.info('')
+        logger.info(f"Remove subplot at index: {index}")
         if index == -1:
             return
         elif index == 0 and len(self.model.plots) == 1:

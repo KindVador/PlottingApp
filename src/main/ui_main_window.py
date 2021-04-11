@@ -8,11 +8,8 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
+from PySide2.QtCore import (QCoreApplication, QMetaObject, QRect, QSize, Qt)
+from PySide2.QtGui import (QFont)
 from PySide2.QtWidgets import *
 
 from .widgets import MatplotlibWidget
@@ -132,13 +129,6 @@ class Ui_MainWindow(object):
 
         self.plots_button_layout.addWidget(self.remove_lbl)
 
-        self.remove_cbx = QComboBox(self.widget1)
-        self.remove_cbx.setObjectName(u"remove_cbx")
-        self.remove_cbx.setFont(font)
-        self.remove_cbx.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-
-        self.plots_button_layout.addWidget(self.remove_cbx)
-
         self.label = QLabel(self.widget1)
         self.label.setObjectName(u"label")
         self.label.setMaximumSize(QSize(40, 16777215))
@@ -250,7 +240,6 @@ class Ui_MainWindow(object):
         self.parameters_btn.setText(QCoreApplication.translate("MainWindow", u"hide", None))
         self.add_btn.setText(QCoreApplication.translate("MainWindow", u">>>", None))
         self.btn_clear_plots.setText(QCoreApplication.translate("MainWindow", u"Clear all", None))
-        self.remove_lbl.setText(QCoreApplication.translate("MainWindow", u"Remove:", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Marker:", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Line Style:", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Draw style:", None))

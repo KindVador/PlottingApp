@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from PySide2.QtCore import Qt, Signal
-from PySide2.QtWidgets import QMainWindow, QPushButton, QDialog, QAbstractScrollArea
+from PySide2.QtWidgets import QMainWindow, QPushButton, QDialog, QAbstractScrollArea, QAction
 from PySide2.QtGui import QResizeEvent
 
 from .ui_main_window import Ui_MainWindow
 from .ui_log_dialog import Ui_LogDialog
 
+logger = logging.getLogger("PlottingApp")
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
     axe_button_clicked = Signal(int, name='axe_button_clicked')
+    remove_axe_button = Signal(int, name='remove_axe_button')
 
     def __init__(self, version):
         super(self.__class__, self).__init__()
@@ -80,18 +85,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def add_axe(self, axe_nb):
         _btn = QPushButton(text=str(axe_nb + 1), parent=self.buttons_frame)
         _btn.clicked.connect(lambda x: self.axe_button_clicked.emit(axe_nb + 1))
-        # _btn.setContextMenuPolicy(Qt.ActionsContextMenu)
-        # _act = QAction("Remove", self)
-        # _act.triggered.connect(lambda x: self.remove_axe_button.emit(axe_nb))
-        # _btn.addAction(_act)
+        _btn.setContextMenuPolicy(Qt.ActionsContextMenu)
+        _act_rmv = QAction(f"Remove Axe #{axe_nb+1}", self)
+        _act_rmv.triggered.connect(lambda: self.remove_axe_button.emit(axe_nb))
+        _btn.addAction(_act_rmv)
         self.buttons_frame.layout().insertWidget(len(self.axe_buttons) + 2, _btn)
         self.axe_buttons.append(_btn)
-        self.remove_cbx.addItem(str(len(self.axe_buttons)))
 
     def remove_axe(self, axe_nb):
-        self.remove_cbx.removeItem(axe_nb)
-        # self.axe_buttons[axe_nb].removeAction(self.axe_buttons[axe_nb].actions()[0])
-        self.axe_buttons.pop(axe_nb).setParent(None)        # remove button from layout
+        logger.info(f"Remove axe: {axe_nb}")
+        # +2 on index because the layout contains two other buttons 'hide/show' and '>>>'
+        lyt_itm = self.buttons_frame.layout().takeAt(axe_nb+2)
+        self.axe_buttons.pop(axe_nb)
+        lyt_itm.widget().deleteLater()
 
     def get_selected_parameters_and_clear(self):
         d = {}
