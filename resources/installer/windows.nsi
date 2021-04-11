@@ -33,7 +33,7 @@ FunctionEnd
 ;General
 
   Name "${APP_NAME}"
-  OutFile "..\..\dist\${APP_NAME}Installer.exe"
+  OutFile "..\..\dist\${APP_NAME}Installer${VERSION}.exe"
 
 ;--------------------------------
 ;Interface Settings
