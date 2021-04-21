@@ -11,6 +11,7 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 import mplcursors
+from pandas.core.indexes.datetimes import DatetimeIndex
 rcParams['font.family'] = 'sans-serif'
 rcParams['font.sans-serif'] = ['Tahoma']
 rcParams['figure.subplot.top'] = 0.977
@@ -61,7 +62,8 @@ class MatplotlibCanvas(Canvas):
                 ax.plot(v['x_data'].to_numpy(), v['y_data'].to_numpy(), label=lbl, drawstyle=v['drawstyle'], marker=v['marker'], linestyle=v['linestyle'])
             ax.legend(loc='best', ncol=2, fontsize='small')
             mplcursors.cursor(ax.lines)
-        axes[-1].set_xlabel('Time')
+        if isinstance(v['x_data'], DatetimeIndex):
+            axes[-1].set_xlabel('Time')
         self.draw()
 
     def clear(self):
