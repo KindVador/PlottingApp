@@ -263,19 +263,21 @@ class ColumnTableModel(QAbstractTableModel):
             logger.error("Invalid index sent to ColumnTableModel.setData method")
             return False
         # case of an empty column name
-        if index.column() == 2 and len(str(value).strip()) == 0:
+        if index.column() == 3 and len(str(value).strip()) == 0:
             logger.error("Empty column name sent to ColumnTableModel.setData method")
             return False
         # case of a new value
         if role in [Qt.EditRole, Qt.CheckStateRole]:
             self.columns[index.row()][index.column()] = value
             self.dataChanged.emit(index, index)
+            self.column_modified.emit()
             # only simple index is supported, thus we set the previous selected index back to False
-            if self.selected_index.isValid():
-                self.columns[self.selected_index.row()][self.selected_index.column()] = False
-                self.dataChanged.emit(self.selected_index, self.selected_index)
-            self.selected_index = index
-            self.index_changed.emit(self.get_index_name())
+            if index.column() == 2:
+                if self.selected_index.isValid():
+                    self.columns[self.selected_index.row()][self.selected_index.column()] = False
+                    self.dataChanged.emit(self.selected_index, self.selected_index)
+                self.selected_index = index
+                self.index_changed.emit(self.get_index_name())
         return True
 
     def get_index_name(self):
@@ -309,7 +311,7 @@ class DataFrameTableModel(QAbstractTableModel):
             self.endResetModel()
         else:
             self.endResetModel()
-            raise TypeError()
+            raise TypeError(f"pandas.DataFrame type expected, get {type(df)}")
 
     def rowCount(self, parent: QModelIndex = ..., *args, **kwargs):
         if isinstance(self.dataframe, pd.DataFrame):
@@ -513,21 +515,23 @@ class ReadCSVModel(QObject):
         opts = self.options_model.to_dict(keep_none_value=False)
         # add dtype option in opts dict
         opts['dtype'] = self.columns_model.types_dict
-        # if self.columns_model.selected_index:
-        #     opts['index_col'] = self.columns_model.selected_index
+        if self.columns_model.selected_index.isValid():
+            opts['index_col'] = self.columns_model.get_index_name()
         self.preview_model.dataframe = self._create_dataframe(io.StringIO(self._preview_raw_data), opts, rn)
         # saving previous modifications before reloading columns as new option could had changed columns content
         prev_renaming_dict = self.columns_model.to_dict()
         prev_sel_index = self.columns_model.get_index_name()
         # update of columns
-        # TODO to be improve as column modifications should be kept when an option is modified
-        if len(rn) == 0:
-            self.columns_model.clear()
-            for c in self.preview_model.dataframe.columns:
-                # apply previous index selection
-                is_index = bool(c == prev_sel_index)
-                new_name = prev_renaming_dict[c] if c in prev_renaming_dict.keys() else None
-                self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), is_index, new_name)
+        self.columns_model.clear()
+        if self.preview_model.dataframe.index.name:
+            # add index column to the column model
+            self.columns_model.add_column(prev_sel_index, "N/A", True, None)
+        # add other columns
+        for c in self.preview_model.dataframe.columns:
+            # apply previous index selection
+            # new_name = prev_renaming_dict[c] if c in prev_renaming_dict.keys() else None
+            new_name = rn[c] if c in rn.keys() else None
+            self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), False, new_name)
 
     def get_dataframe(self):
         """
