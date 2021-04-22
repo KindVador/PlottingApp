@@ -180,10 +180,11 @@ class ColumnTableModel(QAbstractTableModel):
         self.columns = []
         self.allowed_types = ['float64', 'float32', 'int64', 'int32', 'bool', 'object', 'str', 'datetime']
         self.selected_index = QModelIndex()
+        self._renaming_dict = {}
 
     @property
     def renaming_dict(self):
-        return {c[0]: c[3] for c in self.columns if c[3] is not None}
+        return self._renaming_dict
 
     @property
     def types_dict(self):
@@ -270,7 +271,6 @@ class ColumnTableModel(QAbstractTableModel):
         if role in [Qt.EditRole, Qt.CheckStateRole]:
             self.columns[index.row()][index.column()] = value
             self.dataChanged.emit(index, index)
-            self.column_modified.emit()
             # only simple index is supported, thus we set the previous selected index back to False
             if index.column() == 2:
                 if self.selected_index.isValid():
@@ -278,6 +278,11 @@ class ColumnTableModel(QAbstractTableModel):
                     self.dataChanged.emit(self.selected_index, self.selected_index)
                 self.selected_index = index
                 self.index_changed.emit(self.get_index_name())
+            elif index.column() == 3:
+                self._renaming_dict[self.columns[index.row()][0]] = value
+                self.dataChanged.emit(self.createIndex(index.row(), 0), index)
+            # send a signal to update other GUI items if necessary
+            self.column_modified.emit()
         return True
 
     def get_index_name(self):
@@ -425,18 +430,18 @@ class ReadCSVModel(QObject):
         self.date_format_model = DateFormatModel()
         self._date_format = ''
         self._preview_raw_data = None
-        # connect
-        self.options_model.option_modified.connect(self.update_preview)
-        self.options_model.date_format_required.connect(self.date_format_required.emit)
-        self.columns_model.column_modified.connect(self.update_preview)
-        self.columns_model.index_changed.connect(self.set_index_name)
-
+        self._make_connections()
         # populate model with DateFormat
         # TODO load items from user config file
         self.date_format_model.add_item(('TDA1', '%j-%H:%M:%S:%f'))
         self.date_format_model.add_item(('TDA2', '%j-%H:%M:%S-%f.%f'))
         self.date_format_model.add_item(('TDA3', '%j-%H:%M:%S'))
 
+    def _make_connections(self):
+        self.options_model.option_modified.connect(self.update_preview)
+        self.options_model.date_format_required.connect(self.date_format_required.emit)
+        self.columns_model.column_modified.connect(self.update_preview)
+        self.columns_model.index_changed.connect(self.set_index_name)
 
     @property
     def csv_path(self):
@@ -511,7 +516,7 @@ class ReadCSVModel(QObject):
         if not self._preview_raw_data:
             return
 
-        rn = self.columns_model.renaming_dict
+        rn = self.columns_model.renaming_dict.copy()
         opts = self.options_model.to_dict(keep_none_value=False)
         # add dtype option in opts dict
         opts['dtype'] = self.columns_model.types_dict
@@ -519,7 +524,6 @@ class ReadCSVModel(QObject):
             opts['index_col'] = self.columns_model.get_index_name()
         self.preview_model.dataframe = self._create_dataframe(io.StringIO(self._preview_raw_data), opts, rn)
         # saving previous modifications before reloading columns as new option could had changed columns content
-        prev_renaming_dict = self.columns_model.to_dict()
         prev_sel_index = self.columns_model.get_index_name()
         # update of columns
         self.columns_model.clear()
@@ -529,7 +533,6 @@ class ReadCSVModel(QObject):
         # add other columns
         for c in self.preview_model.dataframe.columns:
             # apply previous index selection
-            # new_name = prev_renaming_dict[c] if c in prev_renaming_dict.keys() else None
             new_name = rn[c] if c in rn.keys() else None
             self.columns_model.add_column(c, str(self.preview_model.dataframe.dtypes[c]), False, new_name)
 
