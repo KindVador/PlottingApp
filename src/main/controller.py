@@ -8,7 +8,7 @@ from PySide2.QtGui import QIcon
 import pandas as pd
 
 from .view import MainWindow, LogFileWindow
-from .model import PlotModel
+from plots.model import PlotModel
 from data_import.controller import ReadCSVController
 from configuration.controller import ApplicationConfigurationController
 

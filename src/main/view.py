@@ -35,7 +35,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.parameters_tree_widget.setHeaderLabels(['Variable Name'])
         self.parameters_tree_widget.setColumnCount(1)
         # add plot toolbar
-        self.get_toolbar_layout().addWidget(self.plot_widget.toolbar)
+        toolbar = self.plot_widget.toolbar
+        toolbar.addSeparator()
+        print(type(toolbar))
+        print(dir(toolbar))
+        print(toolbar._actions)
+        self.actionClearAll = QAction(parent=self, text='Clear all')
+        toolbar.addAction(self.actionClearAll)
+        self.get_toolbar_layout().addWidget(toolbar)
         # set default options
         self.parameters_tree_widget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
 

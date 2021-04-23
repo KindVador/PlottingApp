@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
@@ -22,6 +25,9 @@
       </property>
       <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="variables_layout">
+        <item>
+         <layout class="QHBoxLayout" name="variables_toolbar_layout"/>
+        </item>
         <item>
          <widget class="QLineEdit" name="search_field"/>
         </item>
@@ -138,24 +144,7 @@
         <item>
          <layout class="QVBoxLayout" name="plots_layout" stretch="0,1">
           <item>
-           <layout class="QHBoxLayout" name="plots_button_layout">
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Fixed</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+           <layout class="QHBoxLayout" name="plots_button_layout"/>
           </item>
           <item>
            <widget class="MatplotlibWidget" name="plot_widget" native="true"/>

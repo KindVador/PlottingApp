@@ -3,20 +3,21 @@
 # Form implementation generated from reading ui file 'main_window.ui',
 # licensing of 'main_window.ui' applies.
 #
-# Created: Fri Apr 23 22:13:12 2021
+# Created: Fri Apr 23 23:32:00 2021
 #      by: pyside2-uic  running on PySide2 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-from .widgets import MatplotlibWidget
+from plots.view import MatplotlibWidget
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1066, 600)
+        MainWindow.setUnifiedTitleAndToolBarOnMac(True)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
@@ -29,6 +30,9 @@ class Ui_MainWindow(object):
         self.variables_layout = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.variables_layout.setContentsMargins(0, 0, 0, 0)
         self.variables_layout.setObjectName("variables_layout")
+        self.variables_toolbar_layout = QtWidgets.QHBoxLayout()
+        self.variables_toolbar_layout.setObjectName("variables_toolbar_layout")
+        self.variables_layout.addLayout(self.variables_toolbar_layout)
         self.search_field = QtWidgets.QLineEdit(self.layoutWidget)
         self.search_field.setObjectName("search_field")
         self.variables_layout.addWidget(self.search_field)
@@ -71,8 +75,6 @@ class Ui_MainWindow(object):
         self.plots_layout.setObjectName("plots_layout")
         self.plots_button_layout = QtWidgets.QHBoxLayout()
         self.plots_button_layout.setObjectName("plots_button_layout")
-        spacerItem2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
-        self.plots_button_layout.addItem(spacerItem2)
         self.plots_layout.addLayout(self.plots_button_layout)
         self.plot_widget = MatplotlibWidget(self.layoutWidget1)
         self.plot_widget.setObjectName("plot_widget")
