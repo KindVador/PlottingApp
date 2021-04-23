@@ -34,16 +34,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # update widgets
         self.parameters_tree_widget.setHeaderLabels(['Variable Name'])
         self.parameters_tree_widget.setColumnCount(1)
-        self.marker_cbx.addItems([f"'{m}'" for m in ['.', ',', 'o', 'x', 'X', '+', 'v', '^', '<', '>', 'p', 'P', '*',
-                                                     'h', 'H', 'D', 'd', 'None']])
-        self.line_style_cbx.addItems([f"'{ls}'" for ls in ['-', '--', '-.', ':', 'None']])
-        self.draw_style_cbx.addItems(['default', 'steps', 'steps-pre', 'steps-mid', 'steps-post'])
         # add plot toolbar
         self.get_toolbar_layout().addWidget(self.plot_widget.toolbar)
         # set default options
-        self.marker_cbx.setCurrentText("'.'")
-        self.line_style_cbx.setCurrentText("'-'")
-        self.draw_style_cbx.setCurrentText('steps-post')
         self.parameters_tree_widget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
 
     def show_hide_variables_panel(self):
@@ -113,15 +106,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 d[si.data(0, Qt.DisplayRole)] = None
         self.parameters_tree_widget.clearSelection()
         return d
-
-    def get_marker(self):
-        return self.marker_cbx.currentText().replace("'", "")
-
-    def get_line_style(self):
-        return self.line_style_cbx.currentText().replace("'", "")
-
-    def get_drawstyle(self):
-        return self.draw_style_cbx.currentText()
 
     def resizeEvent(self, event: QResizeEvent):
         super(MainWindow, self).resizeEvent(event)

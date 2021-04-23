@@ -90,7 +90,7 @@ class QtMainController(object):
         self.view.parameters_btn.clicked.connect(self.view.show_hide_variables_panel)
         self.view.add_btn.clicked.connect(self._add_clicked)
         self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
-        self.view.btn_clear_plots.clicked.connect(self._clear_all_plots)
+        self.view.actionClearAll.triggered.connect(self._clear_all_plots)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
         self.view.remove_axe_button.connect(self.remove_subplot)
 
@@ -166,15 +166,13 @@ class QtMainController(object):
     def add_subplot(self, d):
         if len(d) == 0:
             return
-        self.model.add_plot(d, self.view.get_filter_extension(), None, self.view.get_marker(),
-                            self.view.get_line_style(), self.view.get_drawstyle())
+        self.model.add_plot(d, self.view.get_filter_extension(), None)
         self.view.add_axe(len(self.model.plots) - 1)
         self.view.update_plots(self.model.plots)
 
     def add_to_existing_subplot(self, axe_nb):
         d = self.view.get_selected_parameters_and_clear()
-        self.model.add_plot(d, self.view.get_filter_extension(), axe_nb - 1, self.view.get_marker(),
-                            self.view.get_line_style(), self.view.get_drawstyle())
+        self.model.add_plot(d, self.view.get_filter_extension(), axe_nb - 1)
         self.view.update_plots(self.model.plots)
 
     def _clear_all_plots(self):

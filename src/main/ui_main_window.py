@@ -1,251 +1,151 @@
 # -*- coding: utf-8 -*-
 
-################################################################################
-## Form generated from reading UI file 'main_window.ui'
-##
-## Created by: Qt User Interface Compiler version 5.15.0
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
+# Form implementation generated from reading ui file 'main_window.ui',
+# licensing of 'main_window.ui' applies.
+#
+# Created: Fri Apr 23 22:13:12 2021
+#      by: pyside2-uic  running on PySide2 5.13.2
+#
+# WARNING! All changes made in this file will be lost!
 
-from PySide2.QtCore import (QCoreApplication, QMetaObject, QRect, QSize, Qt)
-from PySide2.QtGui import (QFont)
-from PySide2.QtWidgets import *
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from .widgets import MatplotlibWidget
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1066, 600)
-        self.actionQuit = QAction(MainWindow)
-        self.actionQuit.setObjectName(u"actionQuit")
-        self.actionOpen = QAction(MainWindow)
-        self.actionOpen.setObjectName(u"actionOpen")
-        self.actionAbout = QAction(MainWindow)
-        self.actionAbout.setObjectName(u"actionAbout")
-        self.actionSave = QAction(MainWindow)
-        self.actionSave.setObjectName(u"actionSave")
-        self.actionClose = QAction(MainWindow)
-        self.actionClose.setObjectName(u"actionClose")
-        self.actionExport = QAction(MainWindow)
-        self.actionExport.setObjectName(u"actionExport")
-        self.actionCSV = QAction(MainWindow)
-        self.actionCSV.setObjectName(u"actionCSV")
-        self.actionShow_in_table = QAction(MainWindow)
-        self.actionShow_in_table.setObjectName(u"actionShow_in_table")
-        self.actionShow_log = QAction(MainWindow)
-        self.actionShow_log.setObjectName(u"actionShow_log")
-        self.centralwidget = QWidget(MainWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
-        self.horizontalLayout_2 = QHBoxLayout(self.centralwidget)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.splitter = QSplitter(self.centralwidget)
-        self.splitter.setObjectName(u"splitter")
-        self.splitter.setOrientation(Qt.Horizontal)
-        self.widget = QWidget(self.splitter)
-        self.widget.setObjectName(u"widget")
-        self.variables_layout = QVBoxLayout(self.widget)
-        self.variables_layout.setObjectName(u"variables_layout")
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.splitter = QtWidgets.QSplitter(self.centralwidget)
+        self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.setObjectName("splitter")
+        self.layoutWidget = QtWidgets.QWidget(self.splitter)
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.variables_layout = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.variables_layout.setContentsMargins(0, 0, 0, 0)
-        self.search_field = QLineEdit(self.widget)
-        self.search_field.setObjectName(u"search_field")
-
+        self.variables_layout.setObjectName("variables_layout")
+        self.search_field = QtWidgets.QLineEdit(self.layoutWidget)
+        self.search_field.setObjectName("search_field")
         self.variables_layout.addWidget(self.search_field)
-
-        self.parameters_tree_widget = QTreeWidget(self.widget)
-        __qtreewidgetitem = QTreeWidgetItem()
-        __qtreewidgetitem.setText(0, u"1");
-        self.parameters_tree_widget.setHeaderItem(__qtreewidgetitem)
-        self.parameters_tree_widget.setObjectName(u"parameters_tree_widget")
-        self.parameters_tree_widget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
-        self.parameters_tree_widget.setSelectionMode(QAbstractItemView.MultiSelection)
-        self.parameters_tree_widget.setSelectionBehavior(QAbstractItemView.SelectItems)
-        self.parameters_tree_widget.setSortingEnabled(True)
+        self.parameters_tree_widget = QtWidgets.QTreeWidget(self.layoutWidget)
+        self.parameters_tree_widget.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustIgnored)
+        self.parameters_tree_widget.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.parameters_tree_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectItems)
         self.parameters_tree_widget.setAllColumnsShowFocus(True)
         self.parameters_tree_widget.setExpandsOnDoubleClick(False)
         self.parameters_tree_widget.setColumnCount(1)
-
+        self.parameters_tree_widget.setObjectName("parameters_tree_widget")
+        self.parameters_tree_widget.headerItem().setText(0, "1")
         self.variables_layout.addWidget(self.parameters_tree_widget)
-
-        self.splitter.addWidget(self.widget)
-        self.widget1 = QWidget(self.splitter)
-        self.widget1.setObjectName(u"widget1")
-        self.horizontalLayout = QHBoxLayout(self.widget1)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.layoutWidget1 = QtWidgets.QWidget(self.splitter)
+        self.layoutWidget1.setObjectName("layoutWidget1")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.layoutWidget1)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.buttons_frame = QFrame(self.widget1)
-        self.buttons_frame.setObjectName(u"buttons_frame")
-        self.buttons_frame.setMaximumSize(QSize(45, 16777215))
-        self.buttons_frame.setFrameShape(QFrame.Panel)
-        self.buttons_frame.setFrameShadow(QFrame.Raised)
-        self.verticalLayout = QVBoxLayout(self.buttons_frame)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.buttons_frame = QtWidgets.QFrame(self.layoutWidget1)
+        self.buttons_frame.setMaximumSize(QtCore.QSize(45, 16777215))
+        self.buttons_frame.setFrameShape(QtWidgets.QFrame.Panel)
+        self.buttons_frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.buttons_frame.setObjectName("buttons_frame")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.buttons_frame)
         self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 5, 0, 5)
-        self.parameters_btn = QPushButton(self.buttons_frame)
-        self.parameters_btn.setObjectName(u"parameters_btn")
-
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.parameters_btn = QtWidgets.QPushButton(self.buttons_frame)
+        self.parameters_btn.setObjectName("parameters_btn")
         self.verticalLayout.addWidget(self.parameters_btn)
-
-        self.verticalSpacer = QSpacerItem(20, 30, QSizePolicy.Minimum, QSizePolicy.Fixed)
-
-        self.verticalLayout.addItem(self.verticalSpacer)
-
-        self.add_btn = QPushButton(self.buttons_frame)
-        self.add_btn.setObjectName(u"add_btn")
-
+        spacerItem = QtWidgets.QSpacerItem(20, 30, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        self.verticalLayout.addItem(spacerItem)
+        self.add_btn = QtWidgets.QPushButton(self.buttons_frame)
+        self.add_btn.setObjectName("add_btn")
         self.verticalLayout.addWidget(self.add_btn)
-
-        self.verticalSpacer_2 = QSpacerItem(20, 184, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout.addItem(self.verticalSpacer_2)
-
-
+        spacerItem1 = QtWidgets.QSpacerItem(20, 184, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout.addItem(spacerItem1)
         self.horizontalLayout.addWidget(self.buttons_frame)
-
-        self.plots_layout = QVBoxLayout()
-        self.plots_layout.setObjectName(u"plots_layout")
-        self.plots_button_layout = QHBoxLayout()
-        self.plots_button_layout.setObjectName(u"plots_button_layout")
-        self.btn_clear_plots = QPushButton(self.widget1)
-        self.btn_clear_plots.setObjectName(u"btn_clear_plots")
-        font = QFont()
-        font.setPointSize(12)
-        self.btn_clear_plots.setFont(font)
-
-        self.plots_button_layout.addWidget(self.btn_clear_plots)
-
-        self.remove_lbl = QLabel(self.widget1)
-        self.remove_lbl.setObjectName(u"remove_lbl")
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.remove_lbl.sizePolicy().hasHeightForWidth())
-        self.remove_lbl.setSizePolicy(sizePolicy)
-        self.remove_lbl.setMaximumSize(QSize(45, 16777215))
-
-        self.plots_button_layout.addWidget(self.remove_lbl)
-
-        self.label = QLabel(self.widget1)
-        self.label.setObjectName(u"label")
-        self.label.setMaximumSize(QSize(40, 16777215))
-
-        self.plots_button_layout.addWidget(self.label)
-
-        self.marker_cbx = QComboBox(self.widget1)
-        self.marker_cbx.setObjectName(u"marker_cbx")
-        font1 = QFont()
-        font1.setPointSize(12)
-        font1.setBold(False)
-        font1.setWeight(50)
-        self.marker_cbx.setFont(font1)
-        self.marker_cbx.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-
-        self.plots_button_layout.addWidget(self.marker_cbx)
-
-        self.label_2 = QLabel(self.widget1)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setMaximumSize(QSize(48, 16777215))
-
-        self.plots_button_layout.addWidget(self.label_2)
-
-        self.line_style_cbx = QComboBox(self.widget1)
-        self.line_style_cbx.setObjectName(u"line_style_cbx")
-        self.line_style_cbx.setFont(font1)
-        self.line_style_cbx.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-
-        self.plots_button_layout.addWidget(self.line_style_cbx)
-
-        self.label_3 = QLabel(self.widget1)
-        self.label_3.setObjectName(u"label_3")
-
-        self.plots_button_layout.addWidget(self.label_3)
-
-        self.draw_style_cbx = QComboBox(self.widget1)
-        self.draw_style_cbx.setObjectName(u"draw_style_cbx")
-        self.draw_style_cbx.setFont(font)
-
-        self.plots_button_layout.addWidget(self.draw_style_cbx)
-
-        self.horizontalSpacer = QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
-
-        self.plots_button_layout.addItem(self.horizontalSpacer)
-
-
+        self.plots_layout = QtWidgets.QVBoxLayout()
+        self.plots_layout.setObjectName("plots_layout")
+        self.plots_button_layout = QtWidgets.QHBoxLayout()
+        self.plots_button_layout.setObjectName("plots_button_layout")
+        spacerItem2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.plots_button_layout.addItem(spacerItem2)
         self.plots_layout.addLayout(self.plots_button_layout)
-
-        self.plot_widget = MatplotlibWidget(self.widget1)
-        self.plot_widget.setObjectName(u"plot_widget")
-
+        self.plot_widget = MatplotlibWidget(self.layoutWidget1)
+        self.plot_widget.setObjectName("plot_widget")
         self.plots_layout.addWidget(self.plot_widget)
-
         self.plots_layout.setStretch(1, 1)
-
         self.horizontalLayout.addLayout(self.plots_layout)
-
-        self.splitter.addWidget(self.widget1)
-
         self.horizontalLayout_2.addWidget(self.splitter)
-
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QMenuBar(MainWindow)
-        self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1066, 22))
-        self.menuFile = QMenu(self.menubar)
-        self.menuFile.setObjectName(u"menuFile")
-        self.menuHelp = QMenu(self.menubar)
-        self.menuHelp.setObjectName(u"menuHelp")
-        self.menuData = QMenu(self.menubar)
-        self.menuData.setObjectName(u"menuData")
-        self.menuImport = QMenu(self.menuData)
-        self.menuImport.setObjectName(u"menuImport")
+        self.menubar = QtWidgets.QMenuBar()
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1066, 24))
+        self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        self.menuHelp = QtWidgets.QMenu(self.menubar)
+        self.menuHelp.setObjectName("menuHelp")
+        self.menuData = QtWidgets.QMenu(self.menubar)
+        self.menuData.setObjectName("menuData")
+        self.menuImport = QtWidgets.QMenu(self.menuData)
+        self.menuImport.setObjectName("menuImport")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
-        self.statusbar.setObjectName(u"statusbar")
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuData.menuAction())
-        self.menubar.addAction(self.menuHelp.menuAction())
+        self.actionQuit = QtWidgets.QAction(MainWindow)
+        self.actionQuit.setObjectName("actionQuit")
+        self.actionOpen = QtWidgets.QAction(MainWindow)
+        self.actionOpen.setObjectName("actionOpen")
+        self.actionAbout = QtWidgets.QAction(MainWindow)
+        self.actionAbout.setObjectName("actionAbout")
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionClose = QtWidgets.QAction(MainWindow)
+        self.actionClose.setObjectName("actionClose")
+        self.actionExport = QtWidgets.QAction(MainWindow)
+        self.actionExport.setObjectName("actionExport")
+        self.actionCSV = QtWidgets.QAction(MainWindow)
+        self.actionCSV.setObjectName("actionCSV")
+        self.actionShow_in_table = QtWidgets.QAction(MainWindow)
+        self.actionShow_in_table.setObjectName("actionShow_in_table")
+        self.actionShow_log = QtWidgets.QAction(MainWindow)
+        self.actionShow_log.setObjectName("actionShow_log")
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionClose)
         self.menuFile.addAction(self.actionQuit)
         self.menuHelp.addAction(self.actionAbout)
         self.menuHelp.addAction(self.actionShow_log)
+        self.menuImport.addAction(self.actionCSV)
         self.menuData.addAction(self.menuImport.menuAction())
         self.menuData.addAction(self.actionExport)
         self.menuData.addAction(self.actionShow_in_table)
-        self.menuImport.addAction(self.actionCSV)
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuData.menuAction())
+        self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-
-        QMetaObject.connectSlotsByName(MainWindow)
-    # setupUi
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.actionQuit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
-        self.actionOpen.setText(QCoreApplication.translate("MainWindow", u"Open", None))
-        self.actionAbout.setText(QCoreApplication.translate("MainWindow", u"About", None))
-        self.actionSave.setText(QCoreApplication.translate("MainWindow", u"Save", None))
-        self.actionClose.setText(QCoreApplication.translate("MainWindow", u"Close", None))
-        self.actionExport.setText(QCoreApplication.translate("MainWindow", u"Export", None))
-        self.actionCSV.setText(QCoreApplication.translate("MainWindow", u"CSV", None))
-        self.actionShow_in_table.setText(QCoreApplication.translate("MainWindow", u"Show in table", None))
-        self.actionShow_log.setText(QCoreApplication.translate("MainWindow", u"Show log", None))
-        self.parameters_btn.setText(QCoreApplication.translate("MainWindow", u"hide", None))
-        self.add_btn.setText(QCoreApplication.translate("MainWindow", u">>>", None))
-        self.btn_clear_plots.setText(QCoreApplication.translate("MainWindow", u"Clear all", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Marker:", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Line Style:", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Draw style:", None))
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
-        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
-        self.menuData.setTitle(QCoreApplication.translate("MainWindow", u"Data", None))
-        self.menuImport.setTitle(QCoreApplication.translate("MainWindow", u"Import", None))
+        MainWindow.setWindowTitle(QtCore.QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.actionQuit.setText(QtCore.QCoreApplication.translate("MainWindow", u"Quit", None))
+        self.actionOpen.setText(QtCore.QCoreApplication.translate("MainWindow", u"Open", None))
+        self.actionAbout.setText(QtCore.QCoreApplication.translate("MainWindow", u"About", None))
+        self.actionSave.setText(QtCore.QCoreApplication.translate("MainWindow", u"Save", None))
+        self.actionClose.setText(QtCore.QCoreApplication.translate("MainWindow", u"Close", None))
+        self.actionExport.setText(QtCore.QCoreApplication.translate("MainWindow", u"Export", None))
+        self.actionCSV.setText(QtCore.QCoreApplication.translate("MainWindow", u"CSV", None))
+        self.actionShow_in_table.setText(QtCore.QCoreApplication.translate("MainWindow", u"Show in table", None))
+        self.actionShow_log.setText(QtCore.QCoreApplication.translate("MainWindow", u"Show log", None))
+        self.parameters_btn.setText(QtCore.QCoreApplication.translate("MainWindow", u"hide", None))
+        self.add_btn.setText(QtCore.QCoreApplication.translate("MainWindow", u">>>", None))
+        self.menuFile.setTitle(QtCore.QCoreApplication.translate("MainWindow", u"File", None))
+        self.menuHelp.setTitle(QtCore.QCoreApplication.translate("MainWindow", u"Help", None))
+        self.menuData.setTitle(QtCore.QCoreApplication.translate("MainWindow", u"Data", None))
+        self.menuImport.setTitle(QtCore.QCoreApplication.translate("MainWindow", u"Import", None))
     # retranslateUi
-
