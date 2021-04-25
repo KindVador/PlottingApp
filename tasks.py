@@ -7,7 +7,7 @@ from invoke import task
 
 
 __ABSPATH__ = Path(__file__).parent
-__version__ = "v2021.1.0a1"
+__version__ = "v2021.1.0a2"
 
 
 @task

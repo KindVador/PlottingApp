@@ -14,7 +14,7 @@ from PySide2.QtWidgets import QApplication
 from main.controller import QtMainController
 
 CONFIG_DIR = os.path.join(str(Path.home()), ".plotting_app")
-__version__ = '2021.1.0a1'
+__version__ = '2021.1.0a2'
 
 
 class AppContext(object):
