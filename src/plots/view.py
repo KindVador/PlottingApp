@@ -3,17 +3,21 @@ import logging
 
 import matplotlib
 matplotlib.use("Qt5Agg")
-from PySide2.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
-from PySide2.QtCore import QSize
-import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib import rcParams
+import matplotlib.ticker as ticker
+
 import mplcursors
+
+from PySide2.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
+from PySide2.QtCore import QSize
+
 from pandas.core.indexes.datetimes import DatetimeIndex
+
 rcParams['font.family'] = 'sans-serif'
 rcParams['font.sans-serif'] = ['Tahoma']
 rcParams['figure.subplot.top'] = 0.977
@@ -26,8 +30,6 @@ rcParams['figure.subplot.wspace'] = 0.2
 plt.style.use('ggplot')
 
 gmt_axis_fmt = mdates.DateFormatter('%H:%M:%S')
-gmt_minute_locator = mdates.MinuteLocator()
-gmt_second_locator = mdates.SecondLocator()
 
 logger = logging.getLogger("AFS_TOOLBOX")
 
@@ -65,18 +67,14 @@ class MatplotlibCanvas(Canvas):
             for k, v in configs[ax_nb].items():
                 lbl = v['short_label'] if short_label else v['label']
                 ax.plot(v['x_data'].to_numpy(), v['y_data'].to_numpy(), label=lbl, drawstyle=v['drawstyle'], marker=v['marker'], linestyle=v['linestyle'])
-                y_min = int(v['y_data'].min(skipna=True) - 1)
-                y_max = int(v['y_data'].max(skipna=True) + 1)
-                yticks = np.linspace(y_min, y_max, 10)
-                set_ylim = (yticks[0], yticks[-1])
-                ax.set_yticks(yticks)
-                ax.set_ylim(set_ylim)
+                ax.yaxis.set_major_locator(ticker.AutoLocator())
+                ax.yaxis.set_minor_locator(ticker.AutoMinorLocator())
             ax.legend(loc='best', ncol=2, fontsize='small')
             mplcursors.cursor(ax.lines)
         if isinstance(v['x_data'], DatetimeIndex):
-            axes[-1].xaxis.set_major_locator(gmt_minute_locator)
+            axes[-1].xaxis.set_major_locator(ticker.AutoLocator())
+            axes[-1].xaxis.set_minor_locator(ticker.AutoMinorLocator())
             axes[-1].xaxis.set_major_formatter(gmt_axis_fmt)
-            axes[-1].xaxis.set_minor_locator(gmt_second_locator)
             axes[-1].set_xlabel('Time')
         self.draw()
 
