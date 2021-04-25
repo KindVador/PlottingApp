@@ -6,9 +6,7 @@ matplotlib.use("Qt5Agg")
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as Canvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from matplotlib import rcParams
 import matplotlib.ticker as ticker
 
 import mplcursors
@@ -17,17 +15,6 @@ from PySide2.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
 from PySide2.QtCore import QSize
 
 from pandas.core.indexes.datetimes import DatetimeIndex
-
-rcParams['font.family'] = 'sans-serif'
-rcParams['font.sans-serif'] = ['Tahoma']
-rcParams['figure.subplot.top'] = 0.977
-rcParams['figure.subplot.bottom'] = 0.073
-rcParams['figure.subplot.left'] = 0.036
-rcParams['figure.subplot.right'] = 0.99
-rcParams['figure.subplot.hspace'] = 0.2
-rcParams['figure.subplot.wspace'] = 0.2
-
-plt.style.use('ggplot')
 
 gmt_axis_fmt = mdates.DateFormatter('%H:%M:%S')
 

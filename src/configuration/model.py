@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 import json
 import logging
 
+from matplotlib import rcParams
 logger = logging.getLogger("PlottingApp")
 
 
@@ -16,6 +17,40 @@ class JsonSerializable(metaclass=ABCMeta):
     @abstractmethod
     def to_json(self) -> str:
         pass
+
+
+class PlottingConfigModel(JsonSerializable):
+    """
+    Model to handle all parameters related to plotting library
+    """
+
+    json_name = 'plotting_config'
+
+    def __init__(self):
+        self._config = {}
+
+    def add(self, name: str, dct: dict):
+        if name not in self._config:
+            self._config[name] = dct
+        else:
+            logger.error(f"Parameter's name '{name}' already exists in the model")
+
+    def apply(self):
+        for k, v in self._config.items():
+            rcParams[k] = v
+
+    def to_json(self) -> str:
+        return json.dumps(self._config, sort_keys=True, indent=4)
+
+    def to_dict(self) -> dict:
+        return self._config
+
+    @classmethod
+    def from_dict(cls, dct: dict):
+        pm = PlottingConfigModel()
+        for k, v in dct.items():
+            pm.add(k, v)
+        return pm
 
 
 class PresetModel(JsonSerializable):
@@ -63,7 +98,8 @@ class ApplicationConfigurationModel(JsonSerializable):
 
     def __init__(self):
         super(self.__class__, self).__init__()
-        self._models = {PresetModel.json_name: PresetModel()}
+        self._models = {PresetModel.json_name: PresetModel(),
+                        PlottingConfigModel.json_name: PlottingConfigModel()}
         self.is_dirty = False
 
     @property
@@ -81,6 +117,10 @@ class ApplicationConfigurationModel(JsonSerializable):
     def reset(self):
         self._models = {}
 
+    def apply(self):
+        if self.get_model(PlottingConfigModel.json_name):
+            self.get_model(PlottingConfigModel.json_name).apply()
+
     def add_model(self, name: str, model: JsonSerializable):
         logger.debug(f"ApplicationConfigurationModel.add_model({name}, {model})")
         if name in self._models.keys():
@@ -91,12 +131,22 @@ class ApplicationConfigurationModel(JsonSerializable):
             self._models[name] = model
             self.is_dirty = True
 
+    def get_model(self, model_name):
+        if model_name in self.models.keys():
+            return self.models.get(model_name)
+        else:
+            return None
+
     @classmethod
     def from_json(cls, dct: dict):
         logger.debug(f"ApplicationConfigurationModel.from_json({dct})")
         apm = ApplicationConfigurationModel()
         apm.reset()
-        apm.add_model(PresetModel.json_name, PresetModel.from_dict(dct[PresetModel.json_name]))
+        for m in [PresetModel, PlottingConfigModel]:
+            if m.json_name in dct.keys():
+                apm.add_model(m.json_name, m.from_dict(dct[m.json_name]))
+            else:
+                apm.add_model(m.json_name, m())
         return apm
 
     def to_json(self):

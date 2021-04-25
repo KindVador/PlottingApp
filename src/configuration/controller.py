@@ -16,7 +16,6 @@ class ApplicationConfigurationController(object):
     Class to handle user's preferences for the whole application.
 
     User's preferences are saved on the disk in the user folder ('~').
-
     """
 
     def __init__(self, folder, file_name='PlottingApp.cfg'):
@@ -58,6 +57,7 @@ class ApplicationConfigurationController(object):
                 self.model = ApplicationConfigurationModel()
                 logger.error("Invalid configuration file.")
                 logger.error(error)
+        self.model.apply()
 
     def save_to_disk(self, filepath=None):
         logger.debug(f"ApplicationConfigurationController.save_to_disk({filepath})")
