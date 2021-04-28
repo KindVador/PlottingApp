@@ -7,7 +7,9 @@ from PySide2.QtWidgets import QApplication
 from PySide2.QtGui import QIcon
 import pandas as pd
 
+from .model import VariableTreeModel
 from .view import MainWindow, LogFileWindow
+from plots.controller import PlotController
 from plots.model import PlotModel
 from data_import.controller import ReadCSVController
 from configuration.controller import ApplicationConfigurationController
@@ -22,7 +24,7 @@ class QtMainController(object):
     Args:
         app (QApplication):
         import_controller (ImportDialogController):
-        model (PlotModel):
+        plot_model (PlotModel):
         view (MainWindow):
 
     """
@@ -34,8 +36,10 @@ class QtMainController(object):
         self.app = ctx.app
         self.app.setStyle('fusion')
         self.cfg = None
-        self.model = PlotModel()
+        self.model = VariableTreeModel()
         self.view = MainWindow(version)
+        self.plot_model = PlotModel()
+        self.plot_controller = PlotController(plt_view=self.view.plot_widget)
         self.log_view = None
 
     def __call__(self, *args, **kwargs):
@@ -70,6 +74,7 @@ class QtMainController(object):
                 logger.error(f"ICON FILE NOT FOUND : {str(resources_path.joinpath(f'icons/base/{str(size)}.png'))}")
             app_icon.addFile(str(resources_path.joinpath(f'icons/base/{str(size)}.png')), QSize(size, size))
         self.view.setWindowIcon(app_icon)
+        self.view.parameters_tree_widget.setModel(self.model)
         self._make_view_connections()
 
     def _make_view_connections(self):
@@ -89,7 +94,7 @@ class QtMainController(object):
         # main window
         self.view.parameters_btn.clicked.connect(self.view.show_hide_variables_panel)
         self.view.add_btn.clicked.connect(self._add_clicked)
-        self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
+        # self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
         self.view.actionClearAll.triggered.connect(self._clear_all_plots)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
         self.view.remove_axe_button.connect(self.remove_subplot)
@@ -112,11 +117,13 @@ class QtMainController(object):
         logger.info("IMPORT DATA ACTION")
         dic = ReadCSVController(preset_model=self.cfg.model['csv_presets'])
         dic.config_updated.connect(self.cfg.save_to_disk)
-        df = dic.get_data_with_dialog()
+        df, file_path = dic.get_data_with_dialog()
         if isinstance(df, pd.DataFrame):
-            self.model.dataframe = df
+            self.plot_model.dataframe = df
             # updates tree items
-            self.view.parameters_tree_widget.insertTopLevelItems(0, self.model.parameters_items)
+            file_name = Path(file_path).name
+            self.model.addVariables(file_name, list(df.columns))
+            # self.view.parameters_tree_widget.insertTopLevelItems(0, self.plot_model.parameters_items)
             self.view.parameters_tree_widget.resizeColumnToContents(0)
 
     def export_data(self):
@@ -166,27 +173,27 @@ class QtMainController(object):
     def add_subplot(self, d):
         if len(d) == 0:
             return
-        self.model.add_plot(d, self.view.get_filter_extension(), None)
-        self.view.add_axe(len(self.model.plots) - 1)
-        self.view.update_plots(self.model.plots)
+        self.plot_model.add_plot(d, self.view.get_filter_extension(), None)
+        self.view.add_axe(len(self.plot_model.plots) - 1)
+        self.view.update_plots(self.plot_model.plots)
 
     def add_to_existing_subplot(self, axe_nb):
         d = self.view.get_selected_parameters_and_clear()
-        self.model.add_plot(d, self.view.get_filter_extension(), axe_nb - 1)
-        self.view.update_plots(self.model.plots)
+        self.plot_model.add_plot(d, self.view.get_filter_extension(), axe_nb - 1)
+        self.view.update_plots(self.plot_model.plots)
 
     def _clear_all_plots(self):
         logger.info('Clearing all plots')
-        self.model.clear_plots_only()
+        self.plot_model.clear_plots_only()
         self.view.clear_all_plots()
 
     def remove_subplot(self, index):
         logger.info(f"Remove subplot at index: {index}")
         if index == -1:
             return
-        elif index == 0 and len(self.model.plots) == 1:
+        elif index == 0 and len(self.plot_model.plots) == 1:
             self._clear_all_plots()
         else:
-            self.model.remove_plot(index)
-            self.view.remove_axe(len(self.model.plots))
-            self.view.update_plots(self.model.plots)
+            self.plot_model.remove_plot(index)
+            self.view.remove_axe(len(self.plot_model.plots))
+            self.view.update_plots(self.plot_model.plots)

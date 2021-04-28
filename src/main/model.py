@@ -3,79 +3,114 @@ import logging
 import typing
 
 import PySide2
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QStandardItem, QStandardItemModel
+from PySide2.QtCore import Qt, QAbstractItemModel, QModelIndex
 
 
 logger = logging.getLogger("PlottingApp")
 
 
-class VariableItem(QStandardItem):
+class VariableTreeItem(object):
     """
 
     """
 
-    def __init__(self, *args, **kwargs):
-        super(VariableItem, self).__init__(*args, **kwargs)
-        self.filter = None
+    def __init__(self, data, parent=None):
+        self.child_items = []
+        self.item_data = data
+        self.parent = parent
+
+    def appendChild(self, child):
+        self.child_items.append(child)
+
+    def child(self, row: int):
+        if row < 0 or row >= len(self.child_items):
+            return None
+        return self.child_items[row]
+
+    def childCount(self) -> int:
+        return len(self.child_items)
+
+    def columnCount(self) -> int:
+        return len(self.item_data)
+
+    def data(self, column: int):
+        if column < 0 or column >= len(self.item_data):
+            return None
+        return self.item_data[column]
+
+    def row(self) -> int:
+        if self.parent:
+            return self.parent.child_items.index(self)
+        return 0
+
+    def parentItem(self):
+        return self.parent
 
 
-class VariableTreeModel(QStandardItemModel):
-    def __init__(self, parent=None, variables=None):
+class VariableTreeModel(QAbstractItemModel):
+    """
+
+    """
+    def __init__(self, parent=None):
         super(self.__class__, self).__init__(parent)
-        logger.info("Creation of variable tree model")
-        self.root = self.invisibleRootItem()
-        if variables:
-            for v in variables:
-                item = VariableItem(v)
-                self.root.appendRow(item)
+        logger.info("Creation of variable tree plot_model")
+        self.rootItem = VariableTreeItem(["Variables"])
+        self._items = []
 
     def headerData(self, section:int, orientation:PySide2.QtCore.Qt.Orientation, role:int=...) -> typing.Any:
         if role == Qt.DisplayRole and orientation == Qt.Horizontal:
-            return "Variable Name"
+            return self.rootItem.data(section)
         else:
             return None
 
-    # def data(self, index:PySide2.QtCore.QModelIndex, role:int=...) -> typing.Any:
-    #     logger.info("VariableTreeModel.data", index.row(), index.column(), role)
-    #     print(index)
-    #     if role == Qt.DisplayRole:
-    #         return self.variables[index.row()]
-    #     else:
-    #         return None
-    #
-    # def headerData(self, section:int, orientation:PySide2.QtCore.Qt.Orientation, role:int=...) -> typing.Any:
-    #     logger.info("VariableTreeModel.headerData")
-    #     if role == Qt.DisplayRole and orientation == Qt.Horizontal:
-    #         return "Variable Name"
-    #     else:
-    #         return None
-    #
-    # def hasChildren(self, parent:PySide2.QtCore.QModelIndex=...) -> bool:
-    #     logger.info("VariableTreeModel.hasChildren")
-    #     if parent:
-    #         print(parent, parent.row(), parent.column(), parent.isValid(), parent.model())
-    #         return False
-    #     else:
-    #         print("parent is None")
-    #         return False
-    #
-    # def rowCount(self, parent:PySide2.QtCore.QModelIndex=...) -> int:
-    #     logger.info("VariableTreeModel.rowCount")
-    #     if parent:
-    #         print(parent, parent.row(), parent.column(), parent.isValid(), parent.model())
-    #         return len(self.variables)
-    #     else:
-    #         print("parent is None")
-    #         return None
-    #
-    # def columnCount(self, parent:PySide2.QtCore.QModelIndex=...) -> int:
-    #     logger.info("VariableTreeModel.columnCount")
-    #     if parent:
-    #         print(parent, parent.row(), parent.column(), parent.isValid(), parent.model())
-    #         return 1
-    #     else:
-    #         print("parent is None")
-    #         return None
+    def data(self, index:PySide2.QtCore.QModelIndex, role:int=...) -> typing.Any:
+        if (not index.isValid()) or role != Qt.DisplayRole:
+            return None
+        return index.internalPointer().data(index.column())
 
+    def flags(self, index: PySide2.QtCore.QModelIndex):
+        if not index.isValid():
+            return Qt.NoItemFlags
+        return super(self.__class__, self).flags(index)
 
+    def index(self, row, column, parent=None, *args, **kwargs):
+        if not self.hasIndex(row, column, parent):
+            return QModelIndex()
+        if not parent.isValid():
+            parentItem = self.rootItem
+        else:
+            parentItem = parent.internalPointer()
+        childItem = parentItem.child(row)
+        if childItem:
+            return self.createIndex(row, column, childItem)
+        return QModelIndex()
+
+    def parent(self, index:PySide2.QtCore.QModelIndex):
+        if not index.isValid():
+            return QModelIndex()
+        childItem = index.internalPointer()
+        parentItem = childItem.parentItem()
+        if parentItem == self.rootItem:
+            return QModelIndex()
+        return self.createIndex(parentItem.row(), 0, parentItem)
+
+    def rowCount(self, parent:PySide2.QtCore.QModelIndex=...) -> int:
+        if not parent.isValid():
+            return self.rootItem.childCount()
+        return parent.internalPointer().childCount()
+
+    def columnCount(self, parent:PySide2.QtCore.QModelIndex=...) -> int:
+        if not parent.isValid():
+            return self.rootItem.columnCount()
+        return parent.internalPointer().columnCount()
+
+    def addVariables(self, file_name, variables):
+        logger.info("VariableTreeModel.addVariables")
+        first_item = VariableTreeItem([file_name], self.rootItem)
+        self._items.append(first_item)
+        self.rootItem.appendChild(first_item)
+        for v in variables:
+            new_item = VariableTreeItem([v], first_item)
+            first_item.appendChild(new_item)
+            self._items.append(new_item)
+        self.endResetModel()

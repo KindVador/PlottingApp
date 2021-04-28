@@ -76,9 +76,9 @@ class ReadCSVController(QObject):
 
     def get_data_with_dialog(self):
         if self.view.exec_():
-            return self.model.get_dataframe()
+            return self.model.get_dataframe(), self.model.csv_path
         else:
-            return None
+            return None, None
 
     def set_date_format(self, date_format):
         logger.debug(f"ReadCSVController.set_date_format({date_format})")
