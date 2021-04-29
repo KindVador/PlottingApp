@@ -31,15 +31,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionSave.setEnabled(False)
         self.actionExport.setEnabled(False)
         self.actionShow_in_table.setEnabled(False)
-        # update widgets
-        self.parameters_tree_widget.setHeaderLabels(['Variable Name'])
-        self.parameters_tree_widget.setColumnCount(1)
         # add plot toolbar
         toolbar = self.plot_widget.toolbar
         toolbar.addSeparator()
-        print(type(toolbar))
-        print(dir(toolbar))
-        print(toolbar._actions)
         self.actionClearAll = QAction(parent=self, text='Clear all')
         toolbar.addAction(self.actionClearAll)
         self.get_toolbar_layout().addWidget(toolbar)
@@ -116,8 +110,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def resizeEvent(self, event: QResizeEvent):
         super(MainWindow, self).resizeEvent(event)
-        for i in range(self.parameters_tree_widget.columnCount()):
-            self.parameters_tree_widget.resizeColumnToContents(i)
+        # for i in range(self.parameters_tree_widget.columnCount()):
+        #     self.parameters_tree_widget.resizeColumnToContents(i)
 
 
 class LogFileWindow(QDialog, Ui_LogDialog):
