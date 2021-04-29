@@ -94,7 +94,7 @@ class QtMainController(object):
         # main window
         self.view.parameters_btn.clicked.connect(self.view.show_hide_variables_panel)
         self.view.add_btn.clicked.connect(self._add_clicked)
-        # self.view.parameters_tree_widget.itemDoubleClicked.connect(self._double_clicked)
+        self.view.parameters_tree_widget.doubleClicked.connect(self._double_clicked)
         self.view.actionClearAll.triggered.connect(self._clear_all_plots)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
         self.view.remove_axe_button.connect(self.remove_subplot)
@@ -123,7 +123,6 @@ class QtMainController(object):
             # updates tree items
             file_name = Path(file_path).name
             self.model.addVariables(file_name, list(df.columns))
-            # self.view.parameters_tree_widget.insertTopLevelItems(0, self.plot_model.parameters_items)
             self.view.parameters_tree_widget.resizeColumnToContents(0)
 
     def export_data(self):
@@ -143,30 +142,28 @@ class QtMainController(object):
 
     def _add_clicked(self):
         d = {}
-        for si in self.view.parameters_tree_widget.selectedItems():
-            if si.parent():
-                if si.parent().data(0, Qt.DisplayRole) in d:
-                    d[si.parent().data(0, Qt.DisplayRole)] += [si.data(0, Qt.DisplayRole)]
-                else:
-                    d[si.parent().data(0, Qt.DisplayRole)] = [si.data(0, Qt.DisplayRole)]
-            elif si.childCount() > 0:
-                d[si.data(0, Qt.DisplayRole)] = [si.child(i).data(0, Qt.DisplayRole) for i in range(si.childCount())]
+        for si in self.view.parameters_tree_widget.selectedIndexes():
+            if si.internalPointer().parentItem() == self.model.rootItem:
+                for i in range(si.internalPointer().childCount()):
+                    child = si.internalPointer().child(i)
+                    d[child.data(0)] = None
             else:
-                d[si.data(0, Qt.DisplayRole)] = None
+                d[self.model.data(si, Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
         logger.info(f"add parameter {d}")
         self.add_subplot(d)
 
-    def _double_clicked(self, item, column):
-        if item is None:
+    def _double_clicked(self, index):
+        if not index.isValid():
             return
         d = {}
-        if item.parent():
-            d[item.parent().data(0, Qt.DisplayRole)] = [item.data(0, Qt.DisplayRole)]
-        elif item.childCount() > 0:
-            d[item.data(0, Qt.DisplayRole)] = [item.child(i).data(0, Qt.DisplayRole) for i in range(item.childCount())]
+        item = index.internalPointer()
+        if item.parentItem() == self.model.rootItem:
+            for i in range(item.childCount()):
+                child = item.child(i)
+                d[child.data(0)] = None
         else:
-            d[item.data(0, Qt.DisplayRole)] = None
+            d[self.model.data(index, Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
         self.add_subplot(d)
 
