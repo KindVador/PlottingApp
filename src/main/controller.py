@@ -2,12 +2,11 @@
 import logging
 from pathlib import Path
 
-from PySide2.QtCore import Qt, QSize
+from PySide2.QtCore import Qt, QSize, QSortFilterProxyModel
 from PySide2.QtWidgets import QApplication
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QIcon, QStandardItemModel, QStandardItem
 import pandas as pd
 
-from .model import VariableTreeModel
 from .view import MainWindow, LogFileWindow
 from plots.controller import PlotController
 from plots.model import PlotModel
@@ -36,7 +35,11 @@ class QtMainController(object):
         self.app = ctx.app
         self.app.setStyle('fusion')
         self.cfg = None
-        self.model = VariableTreeModel()
+        self.model = QStandardItemModel(parent=None)
+        self.model.setHorizontalHeaderLabels(["Variables"])
+        self.proxy_model = QSortFilterProxyModel(parent=None)
+        self.proxy_model.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.proxy_model.setRecursiveFilteringEnabled(True)
         self.view = MainWindow(version)
         self.plot_model = PlotModel()
         self.plot_controller = PlotController(plt_view=self.view.plot_widget)
@@ -74,7 +77,9 @@ class QtMainController(object):
                 logger.error(f"ICON FILE NOT FOUND : {str(resources_path.joinpath(f'icons/base/{str(size)}.png'))}")
             app_icon.addFile(str(resources_path.joinpath(f'icons/base/{str(size)}.png')), QSize(size, size))
         self.view.setWindowIcon(app_icon)
-        self.view.parameters_tree_widget.setModel(self.model)
+        self.proxy_model.setSourceModel(self.model)
+        self.view.parameters_tree_widget.setModel(self.proxy_model)
+        self.view.parameters_tree_widget.setSortingEnabled(True)
         self._make_view_connections()
 
     def _make_view_connections(self):
@@ -98,6 +103,7 @@ class QtMainController(object):
         self.view.actionClearAll.triggered.connect(self._clear_all_plots)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
         self.view.remove_axe_button.connect(self.remove_subplot)
+        self.view.search_field.textChanged.connect(self.proxy_model.setFilterRegExp)
 
     def _open(self):
         logger.info("OPEN ACTION")
@@ -122,7 +128,11 @@ class QtMainController(object):
             self.plot_model.dataframe = df
             # updates tree items
             file_name = Path(file_path).name
-            self.model.addVariables(file_name, list(df.columns))
+            first_item = QStandardItem(file_name)
+            for col in df.columns:
+                first_item.appendRow(QStandardItem(str(col)))
+            root = self.model.invisibleRootItem()
+            root.appendRow(first_item)
             self.view.parameters_tree_widget.resizeColumnToContents(0)
 
     def export_data(self):
@@ -143,12 +153,15 @@ class QtMainController(object):
     def _add_clicked(self):
         d = {}
         for si in self.view.parameters_tree_widget.selectedIndexes():
-            if si.internalPointer().parentItem() == self.model.rootItem:
-                for i in range(si.internalPointer().childCount()):
-                    child = si.internalPointer().child(i)
+            if not si.isValid():
+                continue    # skip if selected index is not valid, it should not happened ;)
+            selected_item = self.model.itemFromIndex(self.proxy_model.mapToSource(si))
+            if selected_item.hasChildren():
+                for i in range(selected_item.rowCount()):
+                    child = selected_item.child(i)
                     d[child.data(0)] = None
             else:
-                d[self.model.data(si, Qt.DisplayRole)] = None
+                d[self.model.data(self.proxy_model.mapToSource(si), Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
         logger.info(f"add parameter {d}")
         self.add_subplot(d)
@@ -157,13 +170,13 @@ class QtMainController(object):
         if not index.isValid():
             return
         d = {}
-        item = index.internalPointer()
-        if item.parentItem() == self.model.rootItem:
-            for i in range(item.childCount()):
-                child = item.child(i)
+        selected_item = self.model.itemFromIndex(self.proxy_model.mapToSource(index))
+        if selected_item.hasChildren():
+            for i in range(selected_item.rowCount()):
+                child = selected_item.child(i)
                 d[child.data(0)] = None
         else:
-            d[self.model.data(index, Qt.DisplayRole)] = None
+            d[self.model.data(self.proxy_model.mapToSource(index), Qt.DisplayRole)] = None
         self.view.parameters_tree_widget.clearSelection()
         self.add_subplot(d)
 
