@@ -39,6 +39,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.get_toolbar_layout().addWidget(toolbar)
         # set default options
         self.parameters_tree_widget.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
+        self.search_field.setPlaceholderText("Filter...")
 
     def show_hide_variables_panel(self):
         self.parameters_tree_widget.setVisible(not self.parameters_tree_widget.isVisible())
