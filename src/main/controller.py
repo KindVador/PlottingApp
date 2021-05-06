@@ -188,7 +188,18 @@ class QtMainController(object):
         self.view.update_plots(self.plot_model.plots)
 
     def add_to_existing_subplot(self, axe_nb):
-        d = self.view.get_selected_parameters_and_clear()
+        d = {}
+        for si in self.view.parameters_tree_widget.selectedIndexes():
+            if not si.isValid():
+                continue  # skip if selected index is not valid, it should not happened ;)
+            selected_item = self.model.itemFromIndex(self.proxy_model.mapToSource(si))
+            if selected_item.hasChildren():
+                for i in range(selected_item.rowCount()):
+                    child = selected_item.child(i)
+                    d[child.data(0)] = None
+            else:
+                d[self.model.data(self.proxy_model.mapToSource(si), Qt.DisplayRole)] = None
+        self.view.parameters_tree_widget.clearSelection()
         self.plot_model.add_plot(d, self.view.get_filter_extension(), axe_nb - 1)
         self.view.update_plots(self.plot_model.plots)
 

@@ -93,21 +93,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.axe_buttons.pop(axe_nb)
         lyt_itm.widget().deleteLater()
 
-    def get_selected_parameters_and_clear(self):
-        d = {}
-        for si in self.parameters_tree_widget.selectedItems():
-            if si.parent():
-                if si.parent().data(0, Qt.DisplayRole) in d:
-                    d[si.parent().data(0, Qt.DisplayRole)] += [si.data(0, Qt.DisplayRole)]
-                else:
-                    d[si.parent().data(0, Qt.DisplayRole)] = [si.data(0, Qt.DisplayRole)]
-            elif si.childCount() > 0:
-                d[si.data(0, Qt.DisplayRole)] = [si.child(i).data(0, Qt.DisplayRole) for i in range(si.childCount())]
-            else:
-                d[si.data(0, Qt.DisplayRole)] = None
-        self.parameters_tree_widget.clearSelection()
-        return d
-
     def resizeEvent(self, event: QResizeEvent):
         super(MainWindow, self).resizeEvent(event)
         # for i in range(self.parameters_tree_widget.columnCount()):
