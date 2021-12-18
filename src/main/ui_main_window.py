@@ -8,7 +8,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide2 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from plots.view import MatplotlibWidget
 
@@ -96,23 +96,23 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-        self.actionQuit = QtWidgets.QAction(MainWindow)
+        self.actionQuit = QtGui.QAction(MainWindow)
         self.actionQuit.setObjectName("actionQuit")
-        self.actionOpen = QtWidgets.QAction(MainWindow)
+        self.actionOpen = QtGui.QAction(MainWindow)
         self.actionOpen.setObjectName("actionOpen")
-        self.actionAbout = QtWidgets.QAction(MainWindow)
+        self.actionAbout = QtGui.QAction(MainWindow)
         self.actionAbout.setObjectName("actionAbout")
-        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave = QtGui.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
-        self.actionClose = QtWidgets.QAction(MainWindow)
+        self.actionClose = QtGui.QAction(MainWindow)
         self.actionClose.setObjectName("actionClose")
-        self.actionExport = QtWidgets.QAction(MainWindow)
+        self.actionExport = QtGui.QAction(MainWindow)
         self.actionExport.setObjectName("actionExport")
-        self.actionCSV = QtWidgets.QAction(MainWindow)
+        self.actionCSV = QtGui.QAction(MainWindow)
         self.actionCSV.setObjectName("actionCSV")
-        self.actionShow_in_table = QtWidgets.QAction(MainWindow)
+        self.actionShow_in_table = QtGui.QAction(MainWindow)
         self.actionShow_in_table.setObjectName("actionShow_in_table")
-        self.actionShow_log = QtWidgets.QAction(MainWindow)
+        self.actionShow_log = QtGui.QAction(MainWindow)
         self.actionShow_log.setObjectName("actionShow_log")
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)

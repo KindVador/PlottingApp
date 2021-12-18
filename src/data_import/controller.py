@@ -2,8 +2,8 @@
 import os
 import logging
 
-from PySide2.QtWidgets import QFileDialog, QInputDialog, QLineEdit
-from PySide2.QtCore import Slot, QDir, Signal, QObject
+from PySide6.QtWidgets import QFileDialog, QInputDialog, QLineEdit
+from PySide6.QtCore import Slot, QDir, Signal, QObject
 
 from .model import ReadCSVModel
 from .view import ReadCSVDialog, DateFormatDialog

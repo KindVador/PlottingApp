@@ -6,7 +6,7 @@ from collections import OrderedDict
 from collections.abc import Iterable
 
 import pandas as pd
-from PySide2.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject, QAbstractItemModel
+from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal, QObject, QAbstractItemModel
 
 logger = logging.getLogger("PlottingApp")
 

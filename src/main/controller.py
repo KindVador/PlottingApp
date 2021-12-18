@@ -2,9 +2,9 @@
 import logging
 from pathlib import Path
 
-from PySide2.QtCore import Qt, QSize, QSortFilterProxyModel
-from PySide2.QtWidgets import QApplication
-from PySide2.QtGui import QIcon, QStandardItemModel, QStandardItem
+from PySide6.QtCore import Qt, QSize, QSortFilterProxyModel
+from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QIcon, QStandardItemModel, QStandardItem
 import pandas as pd
 
 from .view import MainWindow, LogFileWindow
@@ -103,7 +103,7 @@ class QtMainController(object):
         self.view.actionClearAll.triggered.connect(self._clear_all_plots)
         self.view.axe_button_clicked.connect(self.add_to_existing_subplot)
         self.view.remove_axe_button.connect(self.remove_subplot)
-        self.view.search_field.textChanged.connect(self.proxy_model.setFilterRegExp)
+        self.view.search_field.textChanged.connect(self.proxy_model.setFilterRegularExpression)
 
     def _open(self):
         logger.info("OPEN ACTION")
