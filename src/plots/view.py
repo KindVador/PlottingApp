@@ -11,8 +11,8 @@ import matplotlib.ticker as ticker
 
 import mplcursors
 
-from PySide2.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
-from PySide2.QtCore import QSize
+from PySide6.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
+from PySide6.QtCore import QSize
 
 from pandas.core.indexes.datetimes import DatetimeIndex
 

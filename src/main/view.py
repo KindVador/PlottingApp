@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from PySide2.QtCore import Qt, Signal
-from PySide2.QtWidgets import QMainWindow, QPushButton, QDialog, QAbstractScrollArea, QAction
-from PySide2.QtGui import QResizeEvent
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QMainWindow, QPushButton, QDialog, QAbstractScrollArea
+from PySide6.QtGui import QResizeEvent, QAction
 
 from .ui_main_window import Ui_MainWindow
 from .ui_log_dialog import Ui_LogDialog

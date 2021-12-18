@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from PySide2.QtWidgets import QTreeWidgetItem
+from PySide6.QtWidgets import QTreeWidgetItem
 
 logger = logging.getLogger("PlottingApp")
 

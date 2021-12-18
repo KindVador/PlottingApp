@@ -9,7 +9,7 @@ import argparse
 import logging
 from logging import FileHandler
 
-from PySide2.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from main.controller import QtMainController
 
@@ -32,7 +32,7 @@ class AppContext(object):
     def run(self):
         self.start_log(debug=args.debug)
         self.mc()
-        return self.app.exec_()
+        return self.app.exec()
 
     @property
     def config_dir(self):
